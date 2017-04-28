@@ -10,13 +10,13 @@ angular.module('weather-service-map', ['esri.map'])
             "esri/symbols/SimpleMarkerSymbol",
             "esri/layers/Layer",
             "esri/Graphic",
-            "esri/geometry/support/webMercatorUtils",
+             "esri/widgets/Expand",
             "dojo/_base/array",
             "dojo/on",
             "dojo/dom",
             "dojo/domReady!"
         ], function (Map, FeatureLayer, ScaleBar, Search,
-            LayerList, SimpleMarkerSymbol, Layer, Graphic, webMercatorUtils, arrayUtils, on, dom) {
+            LayerList, SimpleMarkerSymbol, Layer, Graphic, Expand, arrayUtils, on, dom) {
             //setup the map viewer
             self.map = new Map({
                 basemap: 'streets'
@@ -28,7 +28,7 @@ angular.module('weather-service-map', ['esri.map'])
             //setup widgets
             var scale = new ScaleBar();
             var search = new Search();
-            var toc = new LayerList();
+            var infoContainer, expandWidget;
             var selectionSymbol = SimpleMarkerSymbol({
                 color: [0, 0, 0, 0],
                 style: "circle",
@@ -41,9 +41,18 @@ angular.module('weather-service-map', ['esri.map'])
 
             $scope.radatastation = "new";
             var template = {
-                title: "Weather Forecast",
+                title: "Feature ID",
                 content: "Feature is a {LocationType} with ID {FID}"
             }
+            infoContainer = dom.byId("infoWidget");
+            expandWidget = new Expand({
+                expandIconClass: "esri-icon-edit",
+                expandTooltip: "Expand Edit",
+                expanded: true,
+                view: self.mapview,
+                content: infoContainer
+            });
+
             self.redlandspointfeaturelayer.popupTemplate = template;
 
             self.onViewCreated = function (view) {
@@ -52,7 +61,8 @@ angular.module('weather-service-map', ['esri.map'])
                 search.view = self.mapview;
 
                 self.mapview.ui.add(scale, "bottom-left");
-                self.mapview.ui.add(search, 'top-right');
+                self.mapview.ui.add(search, "bottom-right");
+                self.mapview.ui.add(expandWidget, "top-right");
                 self.mapview.then(function () {
                     self.mapview.on("click", getAllFeatures);
                 });
