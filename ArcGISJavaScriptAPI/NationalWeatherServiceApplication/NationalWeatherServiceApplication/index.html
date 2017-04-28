@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html ng-app="weather-map">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <title>Weather Forecast Map</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
+    <style type="text/css">
+        html, body, .esri-view {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body ng-controller="MapController as vm">
+    <h3>National Weather Service</h3>
+    <div>Forecast data from National Weather Service API</div>
+    <div>
+        Nearest Radar Station : {{radarstation}}
+    </div>
+    <div>
+        Nearest Forecast Office : {{forecastoffice}}
+    </div>
+    <div>
+        Forecast : {{forecast}}
+    </div>
+
+    <esri-map-view map="vm.map"
+                   view-options="{scale: 30000, center: [-117.184, 34.057]}"
+                   on-create="vm.onViewCreated">
+    </esri-map-view>
+
+    <script src="https://js.arcgis.com/4.3/"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.js"></script>
+    <script src="https://unpkg.com/angular-esri-map@2"></script>
+    <!--<script src="js/script.js"></script>-->
+    <script src="js/main.js"></script>
+    <script src="js/service.js"></script>
+</body>
+</html>
