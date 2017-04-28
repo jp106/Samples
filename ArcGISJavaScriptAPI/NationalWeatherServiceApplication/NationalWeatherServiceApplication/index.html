@@ -22,7 +22,7 @@
             overflow: auto;
             padding: 12px 15px;
             width: 300px;
-            }
+        }
     </style>
 </head>
 <body ng-controller="MapController as vm">
@@ -38,10 +38,10 @@
         <div>
             Forecast : {{forecast}}
         </div>
-     </div>
+    </div>
     <esri-map-view map="vm.map"
-                    view-options="{scale: 30000, center: [-117.184, 34.057]}"
-                    on-create="vm.onViewCreated">
+                   view-options="{scale: 30000, center: [-117.184, 34.057]}"
+                   on-create="vm.onViewCreated">
     </esri-map-view>
 
     <script src="https://js.arcgis.com/4.3/"></script>
