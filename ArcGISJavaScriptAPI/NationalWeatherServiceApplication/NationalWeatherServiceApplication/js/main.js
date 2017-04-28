@@ -1,4 +1,4 @@
-angular.module('weather-map', ['esri.map'])
+angular.module('weather-service-map', ['esri.map'])
     .controller('MapController', function (esriLoader, weatherFactory, $scope) {
         var self = this;
         esriLoader.require([
@@ -17,15 +17,15 @@ angular.module('weather-map', ['esri.map'])
             "dojo/domReady!"
         ], function (Map, FeatureLayer, ScaleBar, Search,
             LayerList, SimpleMarkerSymbol, Layer, Graphic, webMercatorUtils, arrayUtils, on, dom) {
-
+            //setup the map viewer
             self.map = new Map({
                 basemap: 'streets'
             });
 
-            self.newlayer = new FeatureLayer({
+            self.redlandspointfeaturelayer = new FeatureLayer({
                 url: "http://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Redlands_CA/FeatureServer/0"
             });
-
+            //setup widgets
             var scale = new ScaleBar();
             var search = new Search();
             var toc = new LayerList();
@@ -44,7 +44,7 @@ angular.module('weather-map', ['esri.map'])
                 title: "Weather Forecast",
                 content: "Feature is a {LocationType} with ID {FID}"
             }
-            self.newlayer.popupTemplate = template;
+            self.redlandspointfeaturelayer.popupTemplate = template;
 
             self.onViewCreated = function (view) {
                 self.mapview = view;
@@ -57,7 +57,7 @@ angular.module('weather-map', ['esri.map'])
                     self.mapview.on("click", getAllFeatures);
                 });
 
-
+                //get feature from map click event
                 function getAllFeatures(event) {
                     clearmessages();
                     self.mapview.hitTest(event.screenPoint)
@@ -72,7 +72,7 @@ angular.module('weather-map', ['esri.map'])
                             newgraphic.symbol = selectionSymbol;
                             self.mapview.graphics.add(newgraphic);
 
-
+                            //get feature geometry to get weather data
                             var latitude = response.results[0].mapPoint.latitude;
                             var longitude = response.results[0].mapPoint.longitude;
                             var clickpoint = latitude + "," + longitude;
@@ -80,6 +80,7 @@ angular.module('weather-map', ['esri.map'])
                             console.log(clickpoint);
                             var requesturl = "https://api.weather.gov/points/" + clickpoint;
                             var requestforecast = "https://api.weather.gov/points/" + clickpoint + "/forecast";
+                            //get data from weather service
                             weatherFactory.getPointWeatherDetails(requesturl)
                                 .then(function (response) {
                                     $scope.radarstation = response.radarStation;
@@ -97,7 +98,7 @@ angular.module('weather-map', ['esri.map'])
                                 });
                         });
                 }
-
+                //reset controls and graphics on map
                 var clearmessages = function () {
                     self.mapview.graphics.removeAll();
                     $scope.statusmessage = "No features found.";
@@ -106,6 +107,6 @@ angular.module('weather-map', ['esri.map'])
                     $scope.forecast = " ";
                 };
             };
-            self.map.add(self.newlayer);
+            self.map.add(self.redlandspointfeaturelayer);
         });
     });

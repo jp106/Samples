@@ -3,7 +3,7 @@
     var weather = function ($http) {
 
         var weatherService = {};
-
+        //Get Weather Details from a point geometry
         weatherService.getPointWeatherDetails = function (requestUrl) {
 
             return $http.get(requestUrl).then(function (response) {
@@ -12,7 +12,7 @@
                 return response.data.properties;
             });
         };
-
+        //Get forecast office name from office code 
         weatherService.getforecastOffice = function (forecastOfficeUrl) {
 
             return $http.get(forecastOfficeUrl)
@@ -20,7 +20,7 @@
                     return response.data;
                 });
         };
-
+        //Get weather forecast from point geometry
         weatherService.getweatherforecast = function (forecasturl) {
 
             return $http.get(forecasturl)
@@ -31,7 +31,7 @@
         return weatherService
     };
 
-    var appmodule = angular.module("weather-map");
+    var appmodule = angular.module("weather-service-map");
     appmodule.factory('weatherFactory', weather);
 
 }());
