@@ -25,7 +25,7 @@ angular.module('weather-service-map', ['esri.map'])
                 url: "http://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Redlands_CA/FeatureServer/0"
             });
             //setup widgets
-            var weatherapiurl = "https://api.weather.gov/points/"
+            var weatherapiurl = "https://api.weather.gov/points/";
             var scale = new ScaleBar();
             var search = new Search();
             var infoContainer, expandWidget;
@@ -43,7 +43,7 @@ angular.module('weather-service-map', ['esri.map'])
             var template = {
                 title: "Feature ID",
                 content: "Feature is a {LocationType} with ID {FID}"
-            }
+            };
             infoContainer = dom.byId("infoWidget");
             expandWidget = new Expand({
                 expandIconClass: "esri-icon-edit",
@@ -94,7 +94,7 @@ angular.module('weather-service-map', ['esri.map'])
                     console.log("Map point clicked: ");
                     console.log(clickpoint);
                     var requesturl = weatherapiurl + clickpoint;
-                    return requesturl
+                    return requesturl;
                 }
 
                 //Add selected feature to map

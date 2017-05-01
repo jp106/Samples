@@ -28,7 +28,7 @@
                     return response.data.properties.periods[0];
                 });
         };
-        return weatherService
+        return weatherService;
     };
 
     var appmodule = angular.module("weather-service-map");
