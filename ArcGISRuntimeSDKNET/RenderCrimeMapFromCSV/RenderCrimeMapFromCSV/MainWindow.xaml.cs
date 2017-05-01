@@ -32,19 +32,57 @@ namespace RenderCrimeMapFromCSV
             layer.SelectionColor = Colors.Red;
         }
 
-        private void ButtonUniqueRenderer_Click(object sender, RoutedEventArgs e)
+        private void ButtonClearGraphics_Click(object sender, RoutedEventArgs e)
         {
-            var gl = MainMapView.GraphicsOverlays.First();
-            var uniquer = new UniqueValueRenderer();
-            uniquer.FieldNames.Add("Primary Type");
-            var first = new SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Colors.Red, 5);
-            var first1 = new SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Colors.Red, 6);
-            var first3 = new SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Colors.Red, 7);
+            ResetSelection();
+        }
 
-            UniqueCrimeType.ToList() //.Select(x => new {type=x, symbol=first })
-                            .ForEach(x => uniquer.UniqueValues.Add(new UniqueValue(x, x, first, x)));
+        private void ButtonFullExtent_Click(object sender, RoutedEventArgs e)
+        {
+            MainMapView.SetViewpoint(MainMapView.Map.InitialViewpoint);
+        }
 
-            gl.Renderer = uniquer;
+        private Graphic ConstructGraphicsListfromRow(string row, IList<string> columns)
+        {
+            var attributesKeyValue = new List<KeyValuePair<string, object>>();
+            // find indices of geometry columns
+            int latindex = columns.IndexOf("Latitude");
+            int longindex = columns.IndexOf("Longitude");
+            int crimetypeindex = columns.IndexOf("Primary Type");
+
+            //clear attributes list
+            attributesKeyValue.Clear();
+            var attributesList = UseRegextoSplitrow(row);
+            Console.WriteLine(attributesList[0]);
+
+            //TODO: Handle empty values in UseRegextoSplitrow
+            if (columns.Count > attributesList.Count)
+                return new Graphic();
+
+            //build attribute objects
+            attributesList.Select((x, i) => new { Name = (i < columns.Count) ? columns[i] : "Uknown", Value = x })
+                .ToList()
+                .ForEach(x => attributesKeyValue.Add(new KeyValuePair<string, object>(x.Name, x.Value)));
+
+            UniqueCrimeType.Add(attributesList[crimetypeindex].ToString());
+
+            var latitude = attributesList[latindex];
+            var longitude = attributesList[longindex];
+            return ConstructNewGraphic(latitude, longitude, attributesKeyValue);
+        }
+
+        private Graphic ConstructNewGraphic(string latitude, string longitude, List<KeyValuePair<string, object>> attributes)
+        {
+            IList<Graphic> graphics = new List<Graphic>();
+            double parse;
+            if (Double.TryParse(latitude, out parse) && double.TryParse(longitude.ToString(), out parse))
+            {
+                var longi = Convert.ToDouble(longitude);
+                var lat = Convert.ToDouble(latitude);
+                MapPoint p = new MapPoint(longi, lat, SpatialReferences.Wgs84);
+                return new Graphic(p, attributes);
+            }
+            return new Graphic();
         }
 
         private GraphicsOverlay CreateGraphicsOverlayfromGraphicsList(IList<Graphic> graphics)
@@ -55,6 +93,19 @@ namespace RenderCrimeMapFromCSV
             graphicslayer.Renderer = setsymbology();
             setMapGraphicsLayerExtent(graphics.Where(x => x.Geometry != null).Select(x => (MapPoint)(x.Geometry)).ToList());
             return graphicslayer;
+        }
+
+        private void CrimeTypeList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var gl = MainMapView.GraphicsOverlays.First();
+            var selectedvalue = ((System.Windows.Controls.Primitives.Selector)sender).SelectedValue;
+            gl.ClearSelection();
+            gl.Graphics
+                .Where(x => (x.Attributes.Keys.Contains("Primary Type") == true)
+                && (x.Attributes["Primary Type"].ToString() == selectedvalue.ToString()))
+                .ToList().ForEach(selectGraphics);
+            CountLabel.Content = String.Format("Found {0} crimes.",
+                gl.SelectedGraphics.Count().ToString());
         }
 
         private void Initialize()
@@ -112,54 +163,21 @@ namespace RenderCrimeMapFromCSV
             }
         }
 
+        private void ResetSelection()
+        {
+            CountLabel.Content = String.Empty;
+            MainMapView.GraphicsOverlays.First().ClearSelection();
+        }
+
+        private void selectGraphics(Graphic g)
+        {
+            g.IsSelected = true;
+        }
+
         private void SetCrimeTypeList()
         {
             CrimeTypeList.ItemsSource = UniqueCrimeType;
         }
-
-        private Graphic ConstructGraphicsListfromRow(string row, IList<string> columns)
-        {
-            var attributesKeyValue = new List<KeyValuePair<string, object>>();
-            // find indices of geometry columns
-            int latindex = columns.IndexOf("Latitude");
-            int longindex = columns.IndexOf("Longitude");
-            int crimetypeindex = columns.IndexOf("Primary Type");
-
-            //clear attributes list
-            attributesKeyValue.Clear();
-            var attributesList = UseRegextoSplitrow(row);
-            Console.WriteLine(attributesList[0]);
-
-            //TODO: Handle empty values in UseRegextoSplitrow
-            if (columns.Count > attributesList.Count)
-                return new Graphic();
-
-            //build attribute objects
-            attributesList.Select((x, i) => new { Name = (i < columns.Count) ? columns[i] : "Uknown", Value = x })
-                .ToList()
-                .ForEach(x => attributesKeyValue.Add(new KeyValuePair<string, object>(x.Name, x.Value)));
-
-            UniqueCrimeType.Add(attributesList[crimetypeindex].ToString());
-
-            var latitude = attributesList[latindex];
-            var longitude = attributesList[longindex];
-            return ConstructNewGraphic(latitude, longitude, attributesKeyValue);
-        }
-
-        private Graphic ConstructNewGraphic(string latitude, string longitude, List<KeyValuePair<string, object>> attributes)
-        {
-            IList<Graphic> graphics = new List<Graphic>();
-            double parse;
-            if (Double.TryParse(latitude, out parse) && double.TryParse(longitude.ToString(), out parse))
-            {
-                var longi = Convert.ToDouble(longitude);
-                var lat = Convert.ToDouble(latitude);
-                MapPoint p = new MapPoint(longi, lat, SpatialReferences.Wgs84);
-                return new Graphic(p, attributes);
-            }
-            return new Graphic();
-        }
-
         private async void setMapGraphicsLayerExtent(IEnumerable<MapPoint> points)
         {
             PolygonBuilder pb = new PolygonBuilder(points, SpatialReferences.Wgs84);
@@ -187,10 +205,6 @@ namespace RenderCrimeMapFromCSV
         {
             //first split at ", include quotes, then split at , and exclude " and ,
             var pattern4 = @""".+?""|[^"",]+?(?=,)|(?<=,)[^""]+";
-            //same as above also exclude empty commas
-            var pattern5 = @""".+?""|[^"",]+? (?=,)| (?<=,)[^"",]+";
-            //split at comma, exclude comma
-            var pattern3 = @"((?!,).)*";
 
             var regx = new Regex(pattern4);
             IList<string> attributes = new List<string>();
@@ -200,41 +214,6 @@ namespace RenderCrimeMapFromCSV
             }
 
             return attributes;
-        }
-
-        private void ButtonFullExtent_Click(object sender, RoutedEventArgs e)
-        {
-            MainMapView.SetViewpoint(MainMapView.Map.InitialViewpoint);
-        }
-
-        private void CrimeTypeList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            var gl = MainMapView.GraphicsOverlays.First();
-            var selectedvalue = ((System.Windows.Controls.Primitives.Selector)sender).SelectedValue;
-            gl.ClearSelection();
-            gl.Graphics
-                .Where(x => (x.Attributes.Keys.Contains("Primary Type") == true)
-                && (x.Attributes["Primary Type"].ToString() == selectedvalue.ToString()))
-                .ToList().ForEach(selectGraphics);
-            CountLabel.Content = String.Format("Found {0} crimes.",
-                gl.SelectedGraphics.Count().ToString());
-
-        }
-
-        private void selectGraphics(Graphic g)
-        {
-            g.IsSelected = true;
-        }
-
-        private void ButtonClearGraphics_Click(object sender, RoutedEventArgs e)
-        {
-            ResetSelection();
-        }
-
-        private void ResetSelection()
-        {
-            CountLabel.Content = String.Empty;
-            MainMapView.GraphicsOverlays.First().ClearSelection();
         }
     }
 }
