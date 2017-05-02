@@ -2,9 +2,9 @@
 using Esri.ArcGISRuntime.Mapping;
 using Esri.ArcGISRuntime.Symbology;
 using Esri.ArcGISRuntime.UI;
+using RenderCrimeMapFromCSV.Model;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -42,7 +42,31 @@ namespace RenderCrimeMapFromCSV
             MainMapView.SetViewpoint(MainMapView.Map.InitialViewpoint);
         }
 
-        private Graphic ConstructGraphicsListfromRow(string row, IList<string> columns)
+        private IList<Graphic> ConstructGraphicsList(IList<string> rowlist)
+        {
+            var graphics = new List<Graphic>();
+            var columns = rowlist[0].Split(',');
+            rowlist.Skip(1)
+                .ToList()
+                .ForEach(x => graphics.Add(ConstructNewGraphicfromRow(x, columns)));
+            return graphics;
+        }
+
+        private Graphic ConstructNewGraphic(string latitude, string longitude, List<KeyValuePair<string, object>> attributes)
+        {
+            IList<Graphic> graphics = new List<Graphic>();
+            double parse;
+            if (Double.TryParse(latitude, out parse) && double.TryParse(longitude.ToString(), out parse))
+            {
+                var longi = Convert.ToDouble(longitude);
+                var lat = Convert.ToDouble(latitude);
+                MapPoint p = new MapPoint(longi, lat, SpatialReferences.Wgs84);
+                return new Graphic(p, attributes);
+            }
+            return new Graphic();
+        }
+
+        private Graphic ConstructNewGraphicfromRow(string row, IList<string> columns)
         {
             var attributesKeyValue = new List<KeyValuePair<string, object>>();
             // find indices of geometry columns
@@ -70,21 +94,6 @@ namespace RenderCrimeMapFromCSV
             var longitude = attributesList[longindex];
             return ConstructNewGraphic(latitude, longitude, attributesKeyValue);
         }
-
-        private Graphic ConstructNewGraphic(string latitude, string longitude, List<KeyValuePair<string, object>> attributes)
-        {
-            IList<Graphic> graphics = new List<Graphic>();
-            double parse;
-            if (Double.TryParse(latitude, out parse) && double.TryParse(longitude.ToString(), out parse))
-            {
-                var longi = Convert.ToDouble(longitude);
-                var lat = Convert.ToDouble(latitude);
-                MapPoint p = new MapPoint(longi, lat, SpatialReferences.Wgs84);
-                return new Graphic(p, attributes);
-            }
-            return new Graphic();
-        }
-
         private GraphicsOverlay CreateGraphicsOverlayfromGraphicsList(IList<Graphic> graphics)
         {
             var graphicslayer = new GraphicsOverlay();
@@ -118,14 +127,13 @@ namespace RenderCrimeMapFromCSV
         {
             try
             {
-                //Open CSV File
-                var csvfile = OpenCSVFile();
-                if (csvfile == null)
-                {
-                    return;
-                }
+                UniqueCrimeType = new HashSet<string>();
+                var filepath = @"data\crimedata.csv";
+                //Read CSV File
+                var readcsv = new ReadCSVFile(filepath);
+
                 //Read geometry from csv file and construct graphics list with attributes
-                var graphicslist = ReadCSVFiletoConstructGraphicsList(csvfile);
+                var graphicslist = ConstructGraphicsList(readcsv.CSVRowList);
                 SetCrimeTypeList();
                 AddGraphicsLayertoMap(CreateGraphicsOverlayfromGraphicsList(graphicslist));
             }
@@ -133,36 +141,8 @@ namespace RenderCrimeMapFromCSV
             {
                 MessageBox.Show("Failed to load points from csv file.", "Error loading data.");
                 Console.WriteLine("Failed to load points.");
-                throw;
             }
         }
-
-        private FileStream OpenCSVFile()
-        {
-            var filepath = @"Data\crimedata.csv";
-            Console.Write(File.Exists(filepath));
-            if (!File.Exists(filepath)) return null;
-
-            return File.OpenRead(filepath);
-        }
-
-        private IList<Graphic> ReadCSVFiletoConstructGraphicsList(FileStream csvfile)
-        {
-            using (csvfile)
-            using (var reader = new StreamReader(csvfile))
-            {
-                var graphics = new List<Graphic>();
-                UniqueCrimeType = new HashSet<string>();
-                var columnsstring = reader.ReadLine();
-                IList<String> columns = columnsstring.Split(',');
-                while (!reader.EndOfStream)
-                {
-                    graphics.Add(ConstructGraphicsListfromRow(reader.ReadLine(), columns));
-                }
-                return graphics;
-            }
-        }
-
         private void ResetSelection()
         {
             CountLabel.Content = String.Empty;
@@ -178,6 +158,7 @@ namespace RenderCrimeMapFromCSV
         {
             CrimeTypeList.ItemsSource = UniqueCrimeType;
         }
+
         private async void setMapGraphicsLayerExtent(IEnumerable<MapPoint> points)
         {
             PolygonBuilder pb = new PolygonBuilder(points, SpatialReferences.Wgs84);
