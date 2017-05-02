@@ -59,6 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MapViewModel.cs" />
     <Compile Include="Model\CreateGraphicsLayer.cs" />
     <Compile Include="Model\ReadCSVFile.cs" />
     <Page Include="MainWindow.xaml">

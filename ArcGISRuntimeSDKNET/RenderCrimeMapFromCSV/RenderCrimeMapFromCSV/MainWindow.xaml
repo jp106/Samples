@@ -8,30 +8,23 @@
         mc:Ignorable="d"
         Title="Render Crime Incidents" Height="700" Width="850">
     <Window.Resources>
+        <local:MapViewModel x:Key="MapViewModel" />
     </Window.Resources>
-    <Grid >
-        <esri:MapView x:Name="MainMapView" ></esri:MapView>
-
-        <Border Padding="20" Width="250" VerticalAlignment="Top" 
+    <Grid>
+        <esri:MapView x:Name="MainMapView"  Map="{Binding Map, Source={StaticResource MapViewModel}}"
+                      GraphicsOverlays="{Binding GraphicsOverlays, Source={StaticResource MapViewModel}}" />
+        <Border Padding="20" Width="250" VerticalAlignment="Top"
                 HorizontalAlignment="Right" Background="White" BorderBrush="Black" BorderThickness="1">
-
-            <StackPanel HorizontalAlignment="Right"  >
+            <StackPanel HorizontalAlignment="Right">
                 <Label FontWeight="Bold" FontSize="15" Content="Render Crime Incidents" HorizontalAlignment="Stretch" />
-
-                <WrapPanel HorizontalAlignment="Stretch" >
-                    <Button Content="Click to Full Extent" Click="ButtonFullExtent_Click"
-                            />
+                <WrapPanel HorizontalAlignment="Stretch">
+                    <Button Content="Click to Full Extent" Click="ButtonFullExtent_Click" />
                     <Label Content="Use Mouse Wheel to zoom" HorizontalAlignment="Stretch" />
-
-                    <Button Content="Click to Clear Selection" Click="ButtonClearGraphics_Click"/>
+                    <Button Content="Click to Clear Selection" Click="ButtonClearGraphics_Click" />
                 </WrapPanel>
-                    <Label x:Name="CountLabel" HorizontalAlignment="Stretch" />
-                    <Label Content="Select a crime type" HorizontalAlignment="Center"/>
-                    <ListBox Name="CrimeTypeList" SelectionChanged="CrimeTypeList_SelectionChanged" />
-                
+                <Label Background="White"  Content="{Binding SelectedGraphicsCount, Source={StaticResource MapViewModel}}" />
+                <ListBox Name="CrimeTypeList" SelectionChanged="CrimeTypeList_SelectionChanged" />
             </StackPanel>
         </Border>
-
-
     </Grid>
 </Window>

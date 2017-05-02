@@ -18,6 +18,7 @@ namespace RenderCrimeMapFromCSV
     public partial class MainWindow : Window
     {
         private HashSet<string> UniqueCrimeType;
+        private MapViewModel mapViewModel;
 
         public MainWindow()
         {
@@ -28,8 +29,8 @@ namespace RenderCrimeMapFromCSV
 
         private void AddGraphicsLayertoMap(GraphicsOverlay layer)
         {
-            MainMapView.GraphicsOverlays.Add(layer);
             layer.SelectionColor = Colors.Red;
+            mapViewModel.AddGraphicsOverlay(layer);
         }
 
         private void ButtonClearGraphics_Click(object sender, RoutedEventArgs e)
@@ -39,7 +40,7 @@ namespace RenderCrimeMapFromCSV
 
         private void ButtonFullExtent_Click(object sender, RoutedEventArgs e)
         {
-            MainMapView.SetViewpoint(MainMapView.Map.InitialViewpoint);
+            MainMapView.SetViewpoint(mapViewModel.Map.InitialViewpoint);
         }
 
         private IList<Graphic> ConstructGraphicsList(IList<string> rowlist)
@@ -94,6 +95,7 @@ namespace RenderCrimeMapFromCSV
             var longitude = attributesList[longindex];
             return ConstructNewGraphic(latitude, longitude, attributesKeyValue);
         }
+
         private GraphicsOverlay CreateGraphicsOverlayfromGraphicsList(IList<Graphic> graphics)
         {
             var graphicslayer = new GraphicsOverlay();
@@ -106,21 +108,36 @@ namespace RenderCrimeMapFromCSV
 
         private void CrimeTypeList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            var gl = MainMapView.GraphicsOverlays.First();
+
+            var gl = mapViewModel.GraphicsOverlays.First();
+            if (gl.Graphics.Count == 0)
+            {
+                mapViewModel.SelectedGraphicsCount = "Graphics layer is empty";
+                return;
+            }
+            FilterGraphicsBasedonSelection(sender, gl);
+        }
+
+        private void FilterGraphicsBasedonSelection(object sender, GraphicsOverlay gl)
+        {
             var selectedvalue = ((System.Windows.Controls.Primitives.Selector)sender).SelectedValue;
             gl.ClearSelection();
-            gl.Graphics
-                .Where(x => (x.Attributes.Keys.Contains("Primary Type") == true)
-                && (x.Attributes["Primary Type"].ToString() == selectedvalue.ToString()))
-                .ToList().ForEach(selectGraphics);
-            CountLabel.Content = String.Format("Found {0} crimes.",
+            gl.Graphics.Where(x =>
+                        (x.Attributes.Keys.Contains("Primary Type") == true) &&
+                        (x.Attributes["Primary Type"].ToString() == selectedvalue.ToString()))
+                        .ToList().ForEach(selectGraphic);
+
+            mapViewModel.SelectedGraphicsCount = String.Format("Found {0} crimes ",
                 gl.SelectedGraphics.Count().ToString());
         }
 
         private void Initialize()
         {
             // Create new Map with basemap
-            MainMapView.Map = new Esri.ArcGISRuntime.Mapping.Map(Esri.ArcGISRuntime.Mapping.BasemapType.ImageryWithLabels, 34.056295, -117.195800, 10);
+            mapViewModel = this.FindResource("MapViewModel") as MapViewModel;
+            mapViewModel.Map.Basemap = Basemap.CreateImageryWithLabels();
+            mapViewModel.SelectedGraphicsCount = "Second label";
+
         }
 
         private void LoadPointDatatoMapSetMapExtent()
@@ -143,13 +160,14 @@ namespace RenderCrimeMapFromCSV
                 Console.WriteLine("Failed to load points.");
             }
         }
+
         private void ResetSelection()
         {
-            CountLabel.Content = String.Empty;
-            MainMapView.GraphicsOverlays.First().ClearSelection();
+            mapViewModel.SelectedGraphicsCount = String.Empty;
+            mapViewModel.GraphicsOverlays.First().ClearSelection();
         }
 
-        private void selectGraphics(Graphic g)
+        private void selectGraphic(Graphic g)
         {
             g.IsSelected = true;
         }
@@ -166,7 +184,7 @@ namespace RenderCrimeMapFromCSV
             await MainMapView.SetViewpointAsync(viewpoint);
 
             await MainMapView.SetViewpointCenterAsync(pb.Extent.GetCenter());
-            MainMapView.Map.InitialViewpoint = viewpoint;
+            mapViewModel.Map.InitialViewpoint = viewpoint;
         }
 
         private SimpleRenderer setsymbology()
@@ -186,8 +204,13 @@ namespace RenderCrimeMapFromCSV
         {
             //first split at ", include quotes, then split at , and exclude " and ,
             var pattern4 = @""".+?""|[^"",]+?(?=,)|(?<=,)[^""]+";
-
-            var regx = new Regex(pattern4);
+            //
+            var pattern5 = @""".+?""|([^\d\w""])[,]([^\d\w""])|[^"",]+?(?=,)|(?<=,)[^""]+";
+            //split recursive commas(,,) to include empty strings as missing value
+            //however, if last column is missing doesn't include the last empty string missing value
+            //(?<=,),|".+?"|[^",]+?(?=,)|(?<=,)[^"]+
+            var pattern6 = @"(?<=,),|" + pattern4;
+            var regx = new Regex(pattern6);
             IList<string> attributes = new List<string>();
             foreach (Match m in regx.Matches(row))
             {
