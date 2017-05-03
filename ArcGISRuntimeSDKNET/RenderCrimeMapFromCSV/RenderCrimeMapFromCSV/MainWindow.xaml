@@ -12,6 +12,7 @@
     </Window.Resources>
     <Grid>
         <esri:MapView x:Name="MainMapView"  Map="{Binding Map, Source={StaticResource MapViewModel}}"
+
                       GraphicsOverlays="{Binding GraphicsOverlays, Source={StaticResource MapViewModel}}" />
         <Border Padding="20" Width="250" VerticalAlignment="Top"
                 HorizontalAlignment="Right" Background="White" BorderBrush="Black" BorderThickness="1">
@@ -19,11 +20,14 @@
                 <Label FontWeight="Bold" FontSize="15" Content="Render Crime Incidents" HorizontalAlignment="Stretch" />
                 <WrapPanel HorizontalAlignment="Stretch">
                     <Button Content="Click to Full Extent" Click="ButtonFullExtent_Click" />
-                    <Label Content="Use Mouse Wheel to zoom" HorizontalAlignment="Stretch" />
+                    <Label Content="Use Mouse Wheel to Zoom In/Out" HorizontalAlignment="Stretch" />
                     <Button Content="Click to Clear Selection" Click="ButtonClearGraphics_Click" />
                 </WrapPanel>
                 <Label Background="White"  Content="{Binding SelectedGraphicsCount, Source={StaticResource MapViewModel}}" />
-                <ListBox Name="CrimeTypeList" SelectionChanged="CrimeTypeList_SelectionChanged" />
+                <ListBox Name="CrimeTypeListBox"
+                         SelectionChanged="CrimeTypeList_SelectionChanged"
+                         ItemsSource="{Binding CrimeTypeList, Source={StaticResource MapViewModel}}">
+                </ListBox>
             </StackPanel>
         </Border>
     </Grid>

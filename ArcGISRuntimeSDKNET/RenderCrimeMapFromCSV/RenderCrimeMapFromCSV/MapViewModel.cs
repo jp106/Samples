@@ -2,6 +2,7 @@
 using Esri.ArcGISRuntime.UI;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 
 namespace RenderCrimeMapFromCSV
 {
@@ -50,6 +51,13 @@ namespace RenderCrimeMapFromCSV
             set { selectedGraphicsCount = value; OnPropertyChanged(); }
         }
 
+        private HashSet<string> crimeTypeList = new HashSet<string>();
+
+        public HashSet<string> CrimeTypeList
+        {
+            get { return crimeTypeList; }
+            internal set { crimeTypeList = value; OnPropertyChanged(); }
+        }
 
         /// <summary>
         /// Raises the <see cref="MapViewModel.PropertyChanged" /> event

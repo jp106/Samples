@@ -47,6 +47,7 @@ namespace RenderCrimeMapFromCSV
         {
             var graphics = new List<Graphic>();
             var columns = rowlist[0].Split(',');
+            
             rowlist.Skip(1)
                 .ToList()
                 .ForEach(x => graphics.Add(ConstructNewGraphicfromRow(x, columns)));
@@ -108,7 +109,6 @@ namespace RenderCrimeMapFromCSV
 
         private void CrimeTypeList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-
             var gl = mapViewModel.GraphicsOverlays.First();
             if (gl.Graphics.Count == 0)
             {
@@ -126,7 +126,7 @@ namespace RenderCrimeMapFromCSV
                         (x.Attributes.Keys.Contains("Primary Type") == true) &&
                         (x.Attributes["Primary Type"].ToString() == selectedvalue.ToString()))
                         .ToList().ForEach(selectGraphic);
-
+          
             mapViewModel.SelectedGraphicsCount = String.Format("Found {0} crimes ",
                 gl.SelectedGraphics.Count().ToString());
         }
@@ -174,7 +174,7 @@ namespace RenderCrimeMapFromCSV
 
         private void SetCrimeTypeList()
         {
-            CrimeTypeList.ItemsSource = UniqueCrimeType;
+            mapViewModel.CrimeTypeList = UniqueCrimeType;
         }
 
         private async void setMapGraphicsLayerExtent(IEnumerable<MapPoint> points)
