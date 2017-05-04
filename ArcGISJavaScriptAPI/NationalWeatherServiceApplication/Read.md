@@ -4,3 +4,4 @@
 ##### Visual Studio 2015
 [Sample Request](https://api.weather.gov/points/34.0554,-117.1767)
 
+![Screenshot](https://github.com/jp106/Samples/blob/master/ArcGISJavaScriptAPI/NationalWeatherServiceApplication/AppScreenshot.PNG)
