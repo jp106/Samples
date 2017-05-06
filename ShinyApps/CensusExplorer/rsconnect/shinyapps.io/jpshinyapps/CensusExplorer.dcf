@@ -1,0 +1,10 @@
+name: CensusExplorer
+title: CensusExplorer
+account: jpshinyapps
+server: shinyapps.io
+appId: 152526
+bundleId: 688945
+url: https://jpshinyapps.shinyapps.io/CensusExplorer/
+when: 1485233182.38787
+asMultiple: FALSE
+asStatic: FALSE
