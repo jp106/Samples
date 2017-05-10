@@ -1,6 +1,4 @@
-﻿using Esri.ArcGISRuntime.Geometry;
-using Esri.ArcGISRuntime.Mapping;
-using Esri.ArcGISRuntime.Symbology;
+﻿using Esri.ArcGISRuntime.Mapping;
 using Esri.ArcGISRuntime.UI;
 using RenderCrimeMapFromCSV.Model;
 using System;
@@ -16,9 +14,8 @@ namespace RenderCrimeMapFromCSV
     /// </summary>
     public partial class MainWindow : Window
     {
-        private HashSet<string> UniqueCrimeType;
         private MapViewModel mapViewModel;
-
+        private HashSet<string> UniqueCrimeType;
         public MainWindow()
         {
             InitializeComponent();
@@ -40,16 +37,6 @@ namespace RenderCrimeMapFromCSV
         private void ButtonFullExtent_Click(object sender, RoutedEventArgs e)
         {
             MainMapView.SetViewpoint(mapViewModel.Map.InitialViewpoint);
-        }
-
-        private GraphicsOverlay CreateGraphicsOverlayfromGraphicsList(IList<Graphic> graphics)
-        {
-            var graphicslayer = new GraphicsOverlay();
-            graphicslayer.IsPopupEnabled = true;
-            graphics.ToList().ForEach(x => graphicslayer.Graphics.Add(x));
-            graphicslayer.Renderer = setsymbology();
-            setMapGraphicsLayerExtent(graphics.Where(x => x.Geometry != null).Select(x => (MapPoint)(x.Geometry)).ToList());
-            return graphicslayer;
         }
 
         private void CrimeTypeList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -80,7 +67,6 @@ namespace RenderCrimeMapFromCSV
         {
             // Create new Map with basemap
             mapViewModel = this.FindResource("MapViewModel") as MapViewModel;
-            //mapViewModel.Map.Basemap = Basemap.CreateImageryWithLabels();
             mapViewModel.SelectedGraphicsCount = "Second label";
         }
 
@@ -91,7 +77,7 @@ namespace RenderCrimeMapFromCSV
                 var filepath = @"data\crimedata.csv";
                 //Read CSV File
                 var readcsv = new ReadCSVFileWithTextFieldParser(filepath);
-                var primartytypeindex = Array.IndexOf(readcsv.RowList.First(),"Primary Type");
+                var primartytypeindex = Array.IndexOf(readcsv.RowList.First(), "Primary Type");
                 var getgraphicslist = new ReadStringListToGraphicsList(readcsv.RowList);
                 // Read geometry from csv file and construct graphics list with attributes
                 UniqueCrimeType = new HashSet<string>(readcsv.RowList
@@ -103,11 +89,10 @@ namespace RenderCrimeMapFromCSV
                 // Use readcsv.RowList to use TextFieldParser
                 var graphicslist = getgraphicslist.GraphicsList;
 
-                ///// TODO Add to uniquecrime type
-
-                
                 SetCrimeTypeList();
-                AddGraphicsLayertoMap(CreateGraphicsOverlayfromGraphicsList(graphicslist));
+                var goverlay = new NewGraphicsOverlayFromGraphicsList(graphicslist);
+                AddGraphicsLayertoMap(goverlay.NewGraphicsOverlay);
+                setMapInitialExtent(goverlay.GraphicsExtent);
             }
             catch (Exception)
             {
@@ -132,27 +117,12 @@ namespace RenderCrimeMapFromCSV
             mapViewModel.CrimeTypeList = UniqueCrimeType;
         }
 
-        private async void setMapGraphicsLayerExtent(IEnumerable<MapPoint> points)
+        private async void setMapInitialExtent(Viewpoint viewpoint)
         {
-            PolygonBuilder pb = new PolygonBuilder(points, SpatialReferences.Wgs84);
-            var viewpoint = new Viewpoint(pb.Extent);
             await MainMapView.SetViewpointAsync(viewpoint);
 
-            await MainMapView.SetViewpointCenterAsync(pb.Extent.GetCenter());
+            //await MainMapView.SetViewpointCenterAsync(viewpoint.GetCenter());
             mapViewModel.Map.InitialViewpoint = viewpoint;
-        }
-
-        private SimpleRenderer setsymbology()
-        {
-            SimpleMarkerSymbol pointSymbol = new SimpleMarkerSymbol()
-            {
-                Color = Colors.Yellow,
-                Size = 5,
-                Style = SimpleMarkerSymbolStyle.Square,
-            };
-
-            SimpleRenderer renderer = new SimpleRenderer(pointSymbol);
-            return renderer;
         }
     }
 }

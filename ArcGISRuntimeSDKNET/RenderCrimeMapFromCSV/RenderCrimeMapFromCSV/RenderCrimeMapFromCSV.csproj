@@ -76,6 +76,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="MapViewModel.cs" />
+    <Compile Include="Model\NewGraphicsOverlayFromGraphicsList.cs" />
     <Compile Include="Model\ReadCSVFileWithStreamReader.cs" />
     <Compile Include="Model\ReadStringListToGraphicsList.cs" />
     <Compile Include="Model\ReadCSVWithRegexToGraphicsList.cs" />
