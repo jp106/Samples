@@ -4,15 +4,11 @@ using System.IO;
 
 namespace RenderCrimeMapFromCSV.Model
 {
-    internal class ReadCSVFile
+    internal class ReadCSVFileWithStreamReader
     {
-        public ReadCSVFile()
+        public ReadCSVFileWithStreamReader(string path)
         {
-        }
-
-        public ReadCSVFile(string filepath)
-        {
-            var fileStream = OpenCSVFile(filepath);
+            var fileStream = OpenCSVFile(path);
             CreateRowListFromCSV(fileStream);
         }
 
@@ -20,16 +16,8 @@ namespace RenderCrimeMapFromCSV.Model
 
         public IList<string> CSVRowList
         {
-            get { return csvRowList; }
-        }
-
-        private FileStream OpenCSVFile(string path)
-        {
-            var filepath = @"Data\crimedata.csv";
-            Console.Write(File.Exists(filepath));
-            if (!File.Exists(filepath)) return null;
-
-            return File.OpenRead(filepath);
+            //get { return csvRowList; }
+            get { return csvRowList ?? new List<string>(); }
         }
 
         private void CreateRowListFromCSV(FileStream fileStream)
@@ -46,6 +34,15 @@ namespace RenderCrimeMapFromCSV.Model
 
                 csvRowList = rowlist;
             }
+        }
+
+        private FileStream OpenCSVFile(string path)
+        {
+            var filepath = path;
+            Console.Write(File.Exists(filepath));
+            if (!File.Exists(filepath)) return null;
+
+            return File.OpenRead(filepath);
         }
     }
 }
