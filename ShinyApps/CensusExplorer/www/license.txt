@@ -1,0 +1,1 @@
+Indian states Town amenities data extracted from the Census of India (http://www.censusindia.gov.in/2011census/dchb/DCHB.html), 2011. They can be used for non-commercial purposes only.  It is allowed to redistribute these data. It is not allowed to use them for commercial purposes, without prior consent. See the website for more information.
