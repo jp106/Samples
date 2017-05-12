@@ -77,11 +77,12 @@
     </ApplicationDefinition>
     <Compile Include="MapViewModel.cs" />
     <Compile Include="Model\NewGraphicsOverlayFromGraphicsList.cs" />
-    <Compile Include="Model\ReadCSVFileWithStreamReader.cs" />
-    <Compile Include="Model\ReadStringListToGraphicsList.cs" />
-    <Compile Include="Model\ReadCSVWithRegexToGraphicsList.cs" />
-    <Compile Include="Model\SelectGraphics.cs" />
-    <Compile Include="Model\ReadCSVFileWithTextFieldParser.cs" />
+    <Compile Include="Model\CSVFileFromStreamReader.cs" />
+    <Compile Include="Model\DataTableFromExcel.cs" />
+    <Compile Include="Model\GraphicsList.cs" />
+    <Compile Include="Model\GraphicsListFromCSVRegex.cs" />
+    <Compile Include="Model\Graphics.cs" />
+    <Compile Include="Model\CSVFileFromTextFieldParser.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -114,6 +115,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <Content Include="Data\crimedata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\2017_Annual_Summary.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\Settings.settings">

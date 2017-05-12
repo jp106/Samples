@@ -14,14 +14,27 @@
         <esri:MapView x:Name="MainMapView"  Map="{Binding Map, Source={StaticResource MapViewModel}}"
 
                       GraphicsOverlays="{Binding GraphicsOverlays, Source={StaticResource MapViewModel}}" />
+        <Border>
+            <StackPanel>
+                <Button Content="Render Power Outages"
+                        Click="ButtonLoadOutageDAta_Click" />
+            </StackPanel>
+        </Border>
         <Border Padding="20" Width="250" VerticalAlignment="Top"
-                HorizontalAlignment="Right" Background="White" BorderBrush="Black" BorderThickness="1">
+                HorizontalAlignment="Right" Background="White" 
+                BorderBrush="Black" BorderThickness="1">
+
             <StackPanel HorizontalAlignment="Right">
                 <Label FontWeight="Bold" FontSize="15" Content="Render Crime Incidents" HorizontalAlignment="Stretch" />
                 <WrapPanel HorizontalAlignment="Stretch">
-                    <Button Content="Click to Full Extent" Click="ButtonFullExtent_Click" />
-                    <Label Content="Use Mouse Wheel to Zoom In/Out" HorizontalAlignment="Stretch" />
-                    <Button Content="Click to Clear Selection" Click="ButtonClearGraphics_Click" />
+                    <Button Content="Click to load crime data" 
+                            Click="ButtonLoadCrimeData_Click"></Button>
+                    <Button Content="Click to Full Extent" 
+                            Click="ButtonFullExtent_Click" />
+                    <Label Content="Use Mouse Wheel to Zoom In/Out" 
+                           HorizontalAlignment="Stretch" />
+                    <Button Content="Click to Clear Selection" 
+                            Click="ButtonClearGraphics_Click" />
                 </WrapPanel>
                 <Label Background="White"  Content="{Binding SelectedGraphicsCount, Source={StaticResource MapViewModel}}" />
                 <ListBox Name="CrimeTypeListBox"

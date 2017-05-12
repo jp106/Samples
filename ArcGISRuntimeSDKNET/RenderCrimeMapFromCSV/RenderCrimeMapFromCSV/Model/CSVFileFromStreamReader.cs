@@ -4,9 +4,10 @@ using System.IO;
 
 namespace RenderCrimeMapFromCSV.Model
 {
-    internal class ReadCSVFileWithStreamReader
+    internal class CSVFileFromStreamReader
     {
-        public ReadCSVFileWithStreamReader(string path)
+        // TODO: Rename all classes to nouns
+        public CSVFileFromStreamReader(string path)
         {
             var fileStream = OpenCSVFile(path);
             CreateRowListFromCSV(fileStream);

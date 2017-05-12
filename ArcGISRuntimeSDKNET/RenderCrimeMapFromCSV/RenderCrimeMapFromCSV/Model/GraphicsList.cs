@@ -6,19 +6,19 @@ using System.Linq;
 
 namespace RenderCrimeMapFromCSV.Model
 {
-    internal class ReadStringListToGraphicsList
+    internal class GraphicsList
     {
         private IList<Graphic> graphicsList;
 
-        public IList<Graphic> GraphicsList
+        public IList<Graphic> ListofGraphics
         {
             get { return graphicsList; }
             set { graphicsList = value; }
         }
 
-        public ReadStringListToGraphicsList(IList<string[]> rows)
+        public GraphicsList(IList<string[]> rows)
         {
-           graphicsList = ConstructGraphicsList(rows);
+            graphicsList = ConstructGraphicsList(rows);
         }
 
         private IList<Graphic> ConstructGraphicsList(IList<string[]> rowList)
@@ -33,11 +33,13 @@ namespace RenderCrimeMapFromCSV.Model
             return graphics;
         }
 
-        private Graphic ConstructNewGraphic(string latitude, string longitude, List<KeyValuePair<string, object>> attributes)
+        private Graphic ConstructNewGraphic(string latitude, string longitude,
+                                            List<KeyValuePair<string, object>> attributes)
         {
             IList<Graphic> graphics = new List<Graphic>();
             double parse;
-            if (Double.TryParse(latitude, out parse) && double.TryParse(longitude.ToString(), out parse))
+            if (Double.TryParse(latitude, out parse) && 
+                double.TryParse(longitude.ToString(), out parse))
             {
                 var longi = Convert.ToDouble(longitude);
                 var lat = Convert.ToDouble(latitude);
@@ -65,7 +67,8 @@ namespace RenderCrimeMapFromCSV.Model
             //build attribute objects
             attributes.Select((x, i) => new { Name = columns[i], Value = x })
                 .ToList()
-                .ForEach(x => attributesKeyValue.Add(new KeyValuePair<string, object>(x.Name, x.Value)));
+                .ForEach(x => attributesKeyValue.Add(
+                              new KeyValuePair<string, object>(x.Name, x.Value)));
 
             //UniqueCrimeType.Add(attributes[crimetypeindex].ToString());
 

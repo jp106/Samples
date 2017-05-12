@@ -16,11 +16,11 @@ namespace RenderCrimeMapFromCSV
     {
         private MapViewModel mapViewModel;
         private HashSet<string> UniqueCrimeType;
+
         public MainWindow()
         {
             InitializeComponent();
             Initialize();
-            LoadPointDatatoMapSetMapExtent();
         }
 
         private void AddGraphicsLayertoMap(GraphicsOverlay layer)
@@ -76,9 +76,9 @@ namespace RenderCrimeMapFromCSV
             {
                 var filepath = @"data\crimedata.csv";
                 //Read CSV File
-                var readcsv = new ReadCSVFileWithTextFieldParser(filepath);
+                var readcsv = new CSVFileFromTextFieldParser(filepath);
                 var primartytypeindex = Array.IndexOf(readcsv.RowList.First(), "Primary Type");
-                var getgraphicslist = new ReadStringListToGraphicsList(readcsv.RowList);
+                var getgraphicslist = new GraphicsList(readcsv.RowList);
                 // Read geometry from csv file and construct graphics list with attributes
                 UniqueCrimeType = new HashSet<string>(readcsv.RowList
                                                              .Skip(1)
@@ -87,7 +87,7 @@ namespace RenderCrimeMapFromCSV
                 // var graphicslist = ConstructGraphicsList(readcsv.CSVRowList);
 
                 // Use readcsv.RowList to use TextFieldParser
-                var graphicslist = getgraphicslist.GraphicsList;
+                var graphicslist = getgraphicslist.ListofGraphics;
 
                 SetCrimeTypeList();
                 var goverlay = new NewGraphicsOverlayFromGraphicsList(graphicslist);
@@ -101,6 +101,7 @@ namespace RenderCrimeMapFromCSV
             }
         }
 
+        
         private void ResetSelection()
         {
             mapViewModel.SelectedGraphicsCount = String.Empty;
@@ -123,6 +124,25 @@ namespace RenderCrimeMapFromCSV
 
             //await MainMapView.SetViewpointCenterAsync(viewpoint.GetCenter());
             mapViewModel.Map.InitialViewpoint = viewpoint;
+        }
+
+        private void ButtonLoadCrimeData_Click(object sender, RoutedEventArgs e)
+        {
+            LoadPointDatatoMapSetMapExtent();
+
+        }
+
+        private void ButtonLoadOutageDAta_Click(object sender, RoutedEventArgs e)
+        {
+            LoadOutageDatatoMapSetMapExtent();
+        }
+
+        private void LoadOutageDatatoMapSetMapExtent()
+        {
+            //ReadExcel();
+            //LoadGeometryToGraphicsList();
+            //CreateGraphicsLayerFromList();
+            //AddGraphicsToLayer();
         }
     }
 }

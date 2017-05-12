@@ -35,7 +35,8 @@ namespace RenderCrimeMapFromCSV.Model
             graphicslayer.IsPopupEnabled = true;
             graphics.ToList().ForEach(x => graphicslayer.Graphics.Add(x));
             graphicslayer.Renderer = setsymbology();
-            getGraphicsOverlayExtent(graphics.Where(x => x.Geometry != null).Select(x => (MapPoint)(x.Geometry)).ToList());
+            getGraphicsOverlayExtent(graphics.Where(x => x.Geometry != null)
+                                             .Select(x => (MapPoint)(x.Geometry)).ToList());
             newGraphicsOverlay = graphicslayer;
         }
 

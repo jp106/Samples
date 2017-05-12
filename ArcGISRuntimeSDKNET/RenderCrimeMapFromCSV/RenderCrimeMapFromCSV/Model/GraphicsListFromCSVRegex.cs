@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace RenderCrimeMapFromCSV.Model
 {
-    internal class ReadCSVWithRegexToGraphicsList
+    internal class GraphicsListFromCSVRegex
     {
-        public ReadCSVWithRegexToGraphicsList()
+        public GraphicsListFromCSVRegex()
         {
 
         }
@@ -21,19 +21,23 @@ namespace RenderCrimeMapFromCSV.Model
             int longindex = columns.IndexOf("Longitude");
             int crimetypeindex = columns.IndexOf("Primary Type");
 
-            //clear attributes list
+            // clear attributes list
             attributesKeyValue.Clear();
             var attributesList = UseRegextoSplitrow(row);
             Console.WriteLine(attributesList[0]);
 
-            //TODO: Handle empty values in UseRegextoSplitrow
+            // Handle empty values in UseRegextoSplitrow
             if (columns.Count > attributesList.Count)
                 return new Graphic();
 
-            //build attribute objects
-            attributesList.Select((x, i) => new { Name = (i < columns.Count) ? columns[i] : "Uknown", Value = x })
-                .ToList()
-                .ForEach(x => attributesKeyValue.Add(new KeyValuePair<string, object>(x.Name, x.Value)));
+            // build attribute objects
+            attributesList.Select((x, i) => new {
+                                                    Name = (i < columns.Count) ? columns[i] : "Uknown",
+                                                    Value = x
+                                                })
+                          .ToList()
+                          .ForEach(x => attributesKeyValue.Add(
+                                        new KeyValuePair<string, object>(x.Name, x.Value)));
 
             var latitude = attributesList[latindex];
             var longitude = attributesList[longindex];
@@ -60,11 +64,13 @@ namespace RenderCrimeMapFromCSV.Model
             return attributes;
         }
 
-        private Graphic ConstructNewGraphic(string latitude, string longitude, List<KeyValuePair<string, object>> attributes)
+        private Graphic ConstructNewGraphic(string latitude, string longitude, 
+                                            List<KeyValuePair<string, object>> attributes)
         {
             IList<Graphic> graphics = new List<Graphic>();
             double parse;
-            if (Double.TryParse(latitude, out parse) && double.TryParse(longitude.ToString(), out parse))
+            if (Double.TryParse(latitude, out parse) &&
+                double.TryParse(longitude.ToString(), out parse))
             {
                 var longi = Convert.ToDouble(longitude);
                 var lat = Convert.ToDouble(latitude);

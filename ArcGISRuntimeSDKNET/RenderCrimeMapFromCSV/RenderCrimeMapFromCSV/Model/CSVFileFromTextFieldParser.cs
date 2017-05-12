@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 namespace RenderCrimeMapFromCSV.Model
 {
-    public class ReadCSVFileWithTextFieldParser
+    public class CSVFileFromTextFieldParser
     {
         private IList<string[]> rowList;
 
-        public ReadCSVFileWithTextFieldParser()
+        public CSVFileFromTextFieldParser()
         {
         }
 
-        public ReadCSVFileWithTextFieldParser(string filepath)
+        public CSVFileFromTextFieldParser(string filepath)
         {
             UseTextFieldParser(filepath);
         }

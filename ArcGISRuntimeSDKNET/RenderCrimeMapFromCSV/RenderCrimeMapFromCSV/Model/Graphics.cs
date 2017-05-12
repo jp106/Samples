@@ -1,8 +1,8 @@
 ﻿namespace RenderCrimeMapFromCSV.Model
 {
-    public class SelectGraphics
+    public class Graphics
     {
-        public SelectGraphics()
+        public Graphics()
         {
 
         }
