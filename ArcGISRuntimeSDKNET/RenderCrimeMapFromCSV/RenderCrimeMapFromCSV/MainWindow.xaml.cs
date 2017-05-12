@@ -42,7 +42,7 @@ namespace RenderCrimeMapFromCSV
         private void CrimeTypeList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             var gl = mapViewModel.GraphicsOverlays.First();
-            if (gl.Graphics.Count == 0)
+            if (gl.Graphics?.Count == 0)
             {
                 mapViewModel.SelectedGraphicsCount = "Graphics layer is empty";
                 return;

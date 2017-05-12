@@ -7,13 +7,12 @@ namespace RenderCrimeMapFromCSV.Model
 {
     internal class DataTableFromExcel
     {
-        public DataTableFromExcel(string excelpath)
-        {            
-            ConnecttoExcek(excelpath);
-        }
-
         private DataTable dataTableExcel;
 
+        public DataTableFromExcel(string excelpath)
+        {
+            ConnecttoExcek(excelpath);
+        }
         public DataTable DataTableExcel
         {
             get { return dataTableExcel; }
@@ -23,7 +22,6 @@ namespace RenderCrimeMapFromCSV.Model
         private void ConnectToDataSetDataTable(string path)
         {
             ConnecttoExcek(path);
-
         }
 
         private void ConnecttoExcek(string path)
@@ -33,7 +31,7 @@ namespace RenderCrimeMapFromCSV.Model
                 OleDbCommand command = new OleDbCommand();
                 // Set the Connection to the new OleDbConnection.
                 command.Connection = connection;
-                command.CommandText = "Select * from [Sheet1]" ;
+                command.CommandText = "Select * from [Sheet1]";
                 try
                 {
                     connection.Open();
@@ -52,12 +50,12 @@ namespace RenderCrimeMapFromCSV.Model
 
             string fileExtension = Path.GetExtension(filepath);
             if (fileExtension == ".xls")
-                ConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" 
-                                    + filepath + ";" 
+                ConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="
+                                    + filepath + ";"
                                     + "Extended Properties='Excel 8.0;HDR=YES;'";
             if (fileExtension == ".xlsx")
-                ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" 
-                                    + filepath + ";" 
+                ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source="
+                                    + filepath + ";"
                                     + "Extended Properties='Excel 12.0 Xml;HDR=YES;'";
             return ConnectionString;
         }
@@ -65,8 +63,6 @@ namespace RenderCrimeMapFromCSV.Model
         private DataTable GetDataTableFromOLECommand(OleDbCommand cmd)
         {
             var datatable = new DataTable("ExcelData");
-
-            
 
             return datatable;
         }

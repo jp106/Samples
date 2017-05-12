@@ -1,5 +1,4 @@
-﻿using RenderCrimeMapFromCSV.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
 namespace RenderCrimeMapFromCSV.Model.Tests
@@ -7,30 +6,39 @@ namespace RenderCrimeMapFromCSV.Model.Tests
     [TestClass()]
     public class ReadCSVFileTests
     {
-        [TestMethod()]
-        public void ReadCSVFileTestDefaultConstructor()
-        {
-            var read = new CSVFileFromTextFieldParser();
-
-            Console.WriteLine("start test");
-            //var rowlist = read.CSVRowList;
-
-            Assert.IsNotNull(read.RowList);
-        }
-
         private TestContext testContext;
 
         public TestContext TestContext
         {
             get { return testContext; }
-            set { testContext = value   ; }
+            set { testContext = value; }
         }
 
+        [TestMethod]
+        public void CSVFileFromStreamReaderTestConstructorWithRightFilepath()
+        {
+            var filepath = @"Data\crimedata.csv";
+            var read = new CSVFileFromTextFieldParser(filepath);
+            Assert.AreEqual(1279, read.RowList.Count);
+        }        
 
+        [TestMethod()]
+        public void ReadCSVFileTestContructorWithWrongFilepath()
+        {
+            var wrongpath = @"Data\cridata.csv";
+            var read = new CSVFileFromTextFieldParser(wrongpath);
+            Assert.AreEqual(0, read.RowList.Count);
+        }
+
+        [TestMethod()]
+        public void ReadCSVFileTestDefaultConstructorWithNullInput()
+        {
+            var read = new CSVFileFromTextFieldParser(null);
+            Assert.IsNotNull(read.RowList);
+        }
         [TestMethod]
         public void ReadCSVFileTestEmptyFilepathInput()
         {
-            Console.WriteLine("empty file path input test");
             string rowlist;
             var read = new CSVFileFromTextFieldParser("");
             try
@@ -40,31 +48,9 @@ namespace RenderCrimeMapFromCSV.Model.Tests
             }
             catch (Exception e)
             {
-                Console.WriteLine("3 empty file path input test");
-                Console.WriteLine(" error :" + e.Message);
                 return;
-
             }
-            Console.WriteLine("4 epty file path input test");
-            Assert.Fail("dfgdfg");
+            Assert.Fail("Class mishandled empty path.");
         }
-
-        [TestMethod()]
-        public void ReadCSVFileTestContructorWithWrongFilepath()
-        {
-            var filepath = @"Data\cridata.csv";
-            var read = new CSVFileFromTextFieldParser(filepath);
-            Assert.AreEqual(1279,read.RowList.Count);
-        }
-
-        [TestMethod()]
-        public void ReadCSVFileTestConstructorWithFilepath()
-        {
-            var filepath = @"Data\crimedata.csv";
-            var read = new CSVFileFromTextFieldParser(filepath);
-            Assert.IsTrue(read.RowList.Count>1);
-        }
-
-       
     }
 }

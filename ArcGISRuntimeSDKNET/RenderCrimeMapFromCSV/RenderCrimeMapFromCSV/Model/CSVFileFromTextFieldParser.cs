@@ -6,11 +6,7 @@ namespace RenderCrimeMapFromCSV.Model
 {
     public class CSVFileFromTextFieldParser
     {
-        private IList<string[]> rowList;
-
-        public CSVFileFromTextFieldParser()
-        {
-        }
+        private IList<string[]> rowList = new List<string[]>();
 
         public CSVFileFromTextFieldParser(string filepath)
         {
@@ -29,6 +25,8 @@ namespace RenderCrimeMapFromCSV.Model
 
         private void UseTextFieldParser(string filepath)
         {
+            if (!FileSystem.FileExists(filepath)) return;
+
             using (var parser = new TextFieldParser(filepath))
             {
                 parser.Delimiters = new string[] { "," };
@@ -36,6 +34,7 @@ namespace RenderCrimeMapFromCSV.Model
                 while (true)
                 {
                     string[] parts = parser.ReadFields();
+
                     if (parts == null)
                     {
                         break;
