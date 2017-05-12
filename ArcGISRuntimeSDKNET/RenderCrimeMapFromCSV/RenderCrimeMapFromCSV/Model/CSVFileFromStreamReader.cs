@@ -6,22 +6,14 @@ namespace RenderCrimeMapFromCSV.Model
 {
     internal class CSVFileFromStreamReader
     {
-        // TODO: Rename all classes to nouns
         public CSVFileFromStreamReader(string path)
         {
-            var fileStream = OpenCSVFile(path);
-            CreateRowListFromCSV(fileStream);
+            CSVRowList = CreateRowListFromCSV(OpenCSVFile(path));
         }
 
-        private IList<string> csvRowList;
+        public IList<string> CSVRowList { get; } = new List<string>();
 
-        public IList<string> CSVRowList
-        {
-            //get { return csvRowList; }
-            get { return csvRowList ?? new List<string>(); }
-        }
-
-        private void CreateRowListFromCSV(FileStream fileStream)
+        private IList<string> CreateRowListFromCSV(FileStream fileStream)
 
         {
             using (fileStream)
@@ -32,18 +24,10 @@ namespace RenderCrimeMapFromCSV.Model
                 {
                     rowlist.Add(reader.ReadLine());
                 }
-
-                csvRowList = rowlist;
+                return rowlist;
             }
         }
 
-        private FileStream OpenCSVFile(string path)
-        {
-            var filepath = path;
-            Console.Write(File.Exists(filepath));
-            if (!File.Exists(filepath)) return null;
-
-            return File.OpenRead(filepath);
-        }
+        private FileStream OpenCSVFile(string path) => (!File.Exists((string)path)) ? null : File.OpenRead((string)path);
     }
 }

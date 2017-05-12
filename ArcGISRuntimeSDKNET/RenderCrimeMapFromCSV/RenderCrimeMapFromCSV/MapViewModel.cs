@@ -1,49 +1,39 @@
 ﻿using Esri.ArcGISRuntime.Mapping;
 using Esri.ArcGISRuntime.UI;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Collections.Generic;
+using System;
 
 namespace RenderCrimeMapFromCSV
 {
     internal class MapViewModel : INotifyPropertyChanged
     {
-        public MapViewModel()
-        {
+        private HashSet<string> crimeTypeList = new HashSet<string>();
 
+        private GraphicsOverlayCollection graphicsOverlays = new GraphicsOverlayCollection();
+
+        private Map map = new Map(Basemap.CreateDarkGrayCanvasVector());
+
+        private string selectedGraphicsCount = string.Empty;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public HashSet<string> CrimeTypeList
+        {
+            get { return crimeTypeList; }
+            internal set { crimeTypeList = value; OnPropertyChanged(); }
         }
 
+        public GraphicsOverlayCollection GraphicsOverlays { get { return graphicsOverlays; } }
 
-        private Map _map = new Map(Basemap.CreateDarkGrayCanvasVector());
+        internal void AddGraphicsOverlay(GraphicsOverlay layer, bool replace = false) => 
+                                                        graphicsOverlays.Insert(0, layer);
 
         /// <summary>
         /// Gets or sets the map
         /// </summary>
-        public Map Map
-        {
-            get { return _map; }
-            set { _map = value; OnPropertyChanged(); }
-        }
-
-        private GraphicsOverlayCollection graphicsOverlays = new GraphicsOverlayCollection();
-
-        public GraphicsOverlayCollection GraphicsOverlays
-        {
-            get { return graphicsOverlays; }
-            set { graphicsOverlays = value; OnPropertyChanged(); }
-        }
-
-        public void AddGraphicsOverlay(GraphicsOverlay layer)
-        {
-            graphicsOverlays.Add(layer);
-        }
-
-        public void SetViewPoint(Viewpoint viewpoint)
-        {
-            
-        }
-
-        private string selectedGraphicsCount = string.Empty;
+        public Map Map { get { return map; } }
 
         public string SelectedGraphicsCount
         {
@@ -51,12 +41,9 @@ namespace RenderCrimeMapFromCSV
             set { selectedGraphicsCount = value; OnPropertyChanged(); }
         }
 
-        private HashSet<string> crimeTypeList = new HashSet<string>();
 
-        public HashSet<string> CrimeTypeList
+        public void SetViewPoint(Viewpoint viewpoint)
         {
-            get { return crimeTypeList; }
-            internal set { crimeTypeList = value; OnPropertyChanged(); }
         }
 
         /// <summary>
@@ -69,8 +56,5 @@ namespace RenderCrimeMapFromCSV
             if (propertyChangedHandler != null)
                 propertyChangedHandler(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
     }
 }

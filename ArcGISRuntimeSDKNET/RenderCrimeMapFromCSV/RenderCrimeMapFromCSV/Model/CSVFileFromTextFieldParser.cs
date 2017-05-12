@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualBasic.FileIO;
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace RenderCrimeMapFromCSV.Model
 {
@@ -10,40 +10,37 @@ namespace RenderCrimeMapFromCSV.Model
 
         public CSVFileFromTextFieldParser(string filepath)
         {
-            UseTextFieldParser(filepath);
+            RowList = UseTextFieldParser(filepath);
         }
 
-        public IList<string[]> RowList
-        {
-            get { return rowList; }
-            set { rowList = value; }
-        }
+        public IList<string[]> RowList { get; } = new List<string[]>();
 
         private void UseOLEDB()
         {
         }
 
-        private void UseTextFieldParser(string filepath)
+        private IList<string[]> UseTextFieldParser(string filepath)
         {
-            if (!FileSystem.FileExists(filepath)) return;
+            var rows = new List<string[]>();
+            if (!FileSystem.FileExists(filepath)) return rows;
 
             using (var parser = new TextFieldParser(filepath))
             {
                 parser.Delimiters = new string[] { "," };
-                var rows = new List<string[]>();
                 while (true)
                 {
                     string[] parts = parser.ReadFields();
 
-                    if (parts == null)
+                    if (parts?.Length > 0)
                     {
-                        break;
+                        Debug.Print($"{parts.Length} fields");
+                        rows.Add(parts);
+                        continue;
                     }
-                    Console.WriteLine("{0} fields", parts.Length);
-                    rows.Add(parts);
+                    break;
                 }
 
-                rowList = rows;
+                return rows;
             }
         }
     }

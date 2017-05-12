@@ -12,52 +12,34 @@ namespace RenderCrimeMapFromCSV.Model
     {
         private Viewpoint graphicsExtent;
 
-        private GraphicsOverlay newGraphicsOverlay;
-
         public NewGraphicsOverlayFromGraphicsList(IList<Graphic> graphics)
         {
-            CreateGraphicsOverlayfromGraphicsList(graphics);
-        }
-        public Viewpoint GraphicsExtent
-        {
-            get { return graphicsExtent; }
-            set { graphicsExtent = value; }
+            NewGraphicsOverlay = CreateGraphicsOverlayfromGraphicsList(graphics);
         }
 
-        public GraphicsOverlay NewGraphicsOverlay
+        public Viewpoint GraphicsExtent { get { return graphicsExtent; } }
+
+        public GraphicsOverlay NewGraphicsOverlay { get; }
+
+        private SimpleRenderer defaultRenderer => new SimpleRenderer(new SimpleMarkerSymbol()
         {
-            get { return newGraphicsOverlay; }
-            set { newGraphicsOverlay = value; }
-        }
-        private void CreateGraphicsOverlayfromGraphicsList(IList<Graphic> graphics)
+            Color = Colors.Yellow,
+            Size = 5,
+            Style = SimpleMarkerSymbolStyle.Square,
+        });
+
+        private GraphicsOverlay CreateGraphicsOverlayfromGraphicsList(IList<Graphic> graphics)
         {
             var graphicslayer = new GraphicsOverlay();
             graphicslayer.IsPopupEnabled = true;
             graphics.ToList().ForEach(x => graphicslayer.Graphics.Add(x));
-            graphicslayer.Renderer = setsymbology();
-            getGraphicsOverlayExtent(graphics.Where(x => x.Geometry != null)
+            graphicslayer.Renderer = defaultRenderer;
+            graphicsExtent = setGraphicsOverlayExtent(graphics.Where(x => x.Geometry != null)
                                              .Select(x => (MapPoint)(x.Geometry)).ToList());
-            newGraphicsOverlay = graphicslayer;
+            return graphicslayer;
         }
 
-        private void getGraphicsOverlayExtent(IEnumerable<MapPoint> points)
-        {
-            PolygonBuilder pb = new PolygonBuilder(points, SpatialReferences.Wgs84);
-
-            graphicsExtent = new Viewpoint(pb.Extent);
-        }
-
-        private SimpleRenderer setsymbology()
-        {
-            SimpleMarkerSymbol pointSymbol = new SimpleMarkerSymbol()
-            {
-                Color = Colors.Yellow,
-                Size = 5,
-                Style = SimpleMarkerSymbolStyle.Square,
-            };
-
-            SimpleRenderer renderer = new SimpleRenderer(pointSymbol);
-            return renderer;
-        }
+        private Viewpoint setGraphicsOverlayExtent(IEnumerable<MapPoint> points) => new Viewpoint(
+            new PolygonBuilder(points, SpatialReferences.Wgs84).Extent);
     }
 }

@@ -7,22 +7,15 @@ namespace RenderCrimeMapFromCSV.Model
 {
     internal class DataTableFromExcel
     {
-        private DataTable dataTableExcel;
-
         public DataTableFromExcel(string excelpath)
         {
-            ConnecttoExcek(excelpath);
-        }
-        public DataTable DataTableExcel
-        {
-            get { return dataTableExcel; }
-            set { dataTableExcel = value; }
+            // TODO connect and fill datatable
+            //DataTableExcel = ConnecttoExcek(excelpath);
         }
 
-        private void ConnectToDataSetDataTable(string path)
-        {
-            ConnecttoExcek(path);
-        }
+        public DataTable DataTableExcel { get; }
+
+        private void ConnectToDataSetDataTable(string path) => ConnecttoExcek(path);
 
         private void ConnecttoExcek(string path)
         {

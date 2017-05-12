@@ -2,6 +2,7 @@
 using Esri.ArcGISRuntime.UI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -13,6 +14,8 @@ namespace RenderCrimeMapFromCSV.Model
         {
 
         }
+
+        // TODO clean up code
         private Graphic ConstructNewGraphicfromRow(string row, IList<string> columns)
         {
             var attributesKeyValue = new List<KeyValuePair<string, object>>();
@@ -24,7 +27,7 @@ namespace RenderCrimeMapFromCSV.Model
             // clear attributes list
             attributesKeyValue.Clear();
             var attributesList = UseRegextoSplitrow(row);
-            Console.WriteLine(attributesList[0]);
+            Debug.WriteLine(attributesList[0]);
 
             // Handle empty values in UseRegextoSplitrow
             if (columns.Count > attributesList.Count)
@@ -38,10 +41,10 @@ namespace RenderCrimeMapFromCSV.Model
                           .ToList()
                           .ForEach(x => attributesKeyValue.Add(
                                         new KeyValuePair<string, object>(x.Name, x.Value)));
-
-            var latitude = attributesList[latindex];
-            var longitude = attributesList[longindex];
-            return ConstructNewGraphic(latitude, longitude, attributesKeyValue);
+            
+            return ConstructNewGraphic(attributesList[latindex], 
+                                       attributesList[longindex], 
+                                       attributesKeyValue);
         }
 
         private IList<string> UseRegextoSplitrow(string row)

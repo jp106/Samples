@@ -8,28 +8,20 @@ namespace RenderCrimeMapFromCSV.Model
 {
     internal class GraphicsList
     {
-        private IList<Graphic> graphicsList;
-
-        public IList<Graphic> ListofGraphics
-        {
-            get { return graphicsList; }
-            set { graphicsList = value; }
-        }
+        public IList<Graphic> ListofGraphics { get; } = new List<Graphic>();
 
         public GraphicsList(IList<string[]> rows)
         {
-            graphicsList = ConstructGraphicsList(rows);
+            ListofGraphics = ConstructGraphicsList(rows);
         }
 
         private IList<Graphic> ConstructGraphicsList(IList<string[]> rowList)
         {
             var graphics = new List<Graphic>();
             var columns = rowList[0];
-
-            rowList.Skip(1)
-                .ToList()
-                .ForEach(x => graphics.Add(ConstructNewGraphicfromRow(x, columns)));
-
+            rowList?.Skip(1)
+                   .ToList()
+                   .ForEach(x => graphics.Add(ConstructNewGraphicfromRow(x, columns)));
             return graphics;
         }
 
@@ -38,12 +30,12 @@ namespace RenderCrimeMapFromCSV.Model
         {
             IList<Graphic> graphics = new List<Graphic>();
             double parse;
-            if (Double.TryParse(latitude, out parse) && 
+            if (Double.TryParse(latitude, out parse) &&
                 double.TryParse(longitude.ToString(), out parse))
             {
-                var longi = Convert.ToDouble(longitude);
-                var lat = Convert.ToDouble(latitude);
-                MapPoint p = new MapPoint(longi, lat, SpatialReferences.Wgs84);
+                MapPoint p = new MapPoint(Convert.ToDouble(longitude),
+                                          Convert.ToDouble(latitude),
+                                          SpatialReferences.Wgs84);
                 return new Graphic(p, attributes);
             }
             return new Graphic();
@@ -57,24 +49,16 @@ namespace RenderCrimeMapFromCSV.Model
             int longindex = Array.FindIndex(columns, r => r == "Longitude");
             int crimetypeindex = Array.FindIndex(columns, r => r == "Primary Type");
 
-            //clear attributes list
-            attributesKeyValue.Clear();
-
-            //TODO: Handle empty values in UseRegextoSplitrow
-            if (string.IsNullOrEmpty((string)attributes[latindex]))
-                return new Graphic();
-
-            //build attribute objects
-            attributes.Select((x, i) => new { Name = columns[i], Value = x })
-                .ToList()
-                .ForEach(x => attributesKeyValue.Add(
+            // build attribute objects
+            attributes.Select((x, i) => new { Name = columns?[i], Value = x })
+                      .ToList()
+                      .ForEach(x => attributesKeyValue.Add(
                               new KeyValuePair<string, object>(x.Name, x.Value)));
-
-            //UniqueCrimeType.Add(attributes[crimetypeindex].ToString());
-
-            var latitude = attributes[latindex];
-            var longitude = attributes[longindex];
-            return ConstructNewGraphic(latitude, longitude, attributesKeyValue);
+            return (string.IsNullOrEmpty((string)attributes?[latindex])) ?
+                    new Graphic() :
+                    ConstructNewGraphic(attributes[latindex],
+                                        attributes[longindex],
+                                        attributesKeyValue);
         }
     }
 }

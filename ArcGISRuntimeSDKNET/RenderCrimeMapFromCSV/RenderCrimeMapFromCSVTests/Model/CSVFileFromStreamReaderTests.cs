@@ -46,7 +46,7 @@ namespace RenderCrimeMapFromCSV.Model.Tests
                 rowlist = read.RowList[0][0];
                 var newl = rowlist.Split(',');
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return;
             }
