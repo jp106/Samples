@@ -4,11 +4,11 @@ using System.Diagnostics;
 
 namespace RenderCrimeMapFromCSV.Model
 {
-    public class CSVFileFromTextFieldParser
+    public class CSVFileTextFieldParser
     {
         private IList<string[]> rowList = new List<string[]>();
 
-        public CSVFileFromTextFieldParser(string filepath)
+        public CSVFileTextFieldParser(string filepath)
         {
             RowList = UseTextFieldParser(filepath);
         }

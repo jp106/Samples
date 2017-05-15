@@ -76,13 +76,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="MapViewModel.cs" />
-    <Compile Include="Model\NewGraphicsOverlayFromGraphicsList.cs" />
-    <Compile Include="Model\CSVFileFromStreamReader.cs" />
+    <Compile Include="Model\GraphicsOverlayCreator.cs" />
+    <Compile Include="Model\CSVFileStreamReader.cs" />
     <Compile Include="Model\DataTableFromExcel.cs" />
     <Compile Include="Model\GraphicsList.cs" />
     <Compile Include="Model\GraphicsListFromCSVRegex.cs" />
     <Compile Include="Model\Graphics.cs" />
-    <Compile Include="Model\CSVFileFromTextFieldParser.cs" />
+    <Compile Include="Model\CSVFileTextFieldParser.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

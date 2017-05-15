@@ -2,6 +2,7 @@
 using Esri.ArcGISRuntime.UI;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace RenderCrimeMapFromCSV.Model
@@ -13,6 +14,26 @@ namespace RenderCrimeMapFromCSV.Model
         public GraphicsList(IList<string[]> rows)
         {
             ListofGraphics = ConstructGraphicsList(rows);
+        }
+
+        public GraphicsList(DataTable dt)
+        {
+           ListofGraphics =  ConstructGraphicsList(dt);
+        }
+
+        private IList<Graphic> ConstructGraphicsList(DataTable dt)
+        {
+            var graphics = new List<Graphic>();
+            var columns = dt.Columns;
+            var rows = dt.AsEnumerable();
+            rows.ToList().ForEach(r=>graphics.Add(ConstructNewGraphicfromDataRow(r)));
+            return graphics;
+        }
+
+        private Graphic ConstructNewGraphicfromDataRow(DataRow r)
+        {
+            var g = new Graphic();
+            return new Graphic();
         }
 
         private IList<Graphic> ConstructGraphicsList(IList<string[]> rowList)

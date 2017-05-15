@@ -4,7 +4,7 @@ using System;
 namespace RenderCrimeMapFromCSV.Model.Tests
 {
     [TestClass()]
-    public class ReadCSVFileTests
+    public class CSVFileFromTextFieldParserTests
     {
         private TestContext testContext;
 
@@ -17,30 +17,30 @@ namespace RenderCrimeMapFromCSV.Model.Tests
         [TestMethod]
         public void CSVFileFromStreamReaderTestConstructorWithRightFilepath()
         {
-            var filepath = @"Data\crimedata.csv";
-            var read = new CSVFileFromTextFieldParser(filepath);
+            var validpath = @"Data\crimedata.csv";
+            var read = new CSVFileTextFieldParser(validpath);
             Assert.AreEqual(1279, read.RowList.Count);
         }        
 
         [TestMethod()]
         public void ReadCSVFileTestContructorWithWrongFilepath()
         {
-            var wrongpath = @"Data\cridata.csv";
-            var read = new CSVFileFromTextFieldParser(wrongpath);
+            var invalidpath = @"Data\cridata.csv";
+            var read = new CSVFileTextFieldParser(invalidpath);
             Assert.AreEqual(0, read.RowList.Count);
         }
 
         [TestMethod()]
         public void ReadCSVFileTestDefaultConstructorWithNullInput()
         {
-            var read = new CSVFileFromTextFieldParser(null);
+            var read = new CSVFileTextFieldParser(null);
             Assert.IsNotNull(read.RowList);
         }
         [TestMethod]
         public void ReadCSVFileTestEmptyFilepathInput()
         {
             string rowlist;
-            var read = new CSVFileFromTextFieldParser("");
+            var read = new CSVFileTextFieldParser("");
             try
             {
                 rowlist = read.RowList[0][0];

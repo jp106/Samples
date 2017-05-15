@@ -4,9 +4,9 @@ using System.IO;
 
 namespace RenderCrimeMapFromCSV.Model
 {
-    internal class CSVFileFromStreamReader
+    internal class CSVFileStreamReader
     {
-        public CSVFileFromStreamReader(string path)
+        public CSVFileStreamReader(string path)
         {
             CSVRowList = CreateRowListFromCSV(OpenCSVFile(path));
         }

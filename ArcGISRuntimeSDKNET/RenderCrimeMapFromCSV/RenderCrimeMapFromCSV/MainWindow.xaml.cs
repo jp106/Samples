@@ -17,6 +17,8 @@ namespace RenderCrimeMapFromCSV
     public partial class MainWindow : Window
     {
         private const string CSVFILEPATH = @"data\crimedata.csv";
+        private const string EXCELFILEPATH = @"data\2017_Annual_Summary.xls";
+
         private MapViewModel mapViewModel;
         private HashSet<string> UniqueCrimeType;
 
@@ -26,7 +28,7 @@ namespace RenderCrimeMapFromCSV
             Initialize();
         }
 
-        private void AddGraphicsLayertoMap(GraphicsOverlay layer)
+        private void AddGraphicsLayertoMap(Esri.ArcGISRuntime.UI.GraphicsOverlay layer)
         {
             layer.SelectionColor = Colors.Red;
             mapViewModel.AddGraphicsOverlay(layer);
@@ -51,7 +53,7 @@ namespace RenderCrimeMapFromCSV
             FilterGraphicsBasedonSelection(sender, gl);
         }
 
-        private void FilterGraphicsBasedonSelection(object sender, GraphicsOverlay gl)
+        private void FilterGraphicsBasedonSelection(object sender, Esri.ArcGISRuntime.UI.GraphicsOverlay gl)
         {
             var selectedvalue = ((Selector)sender).SelectedValue;
             gl.ClearSelection();
@@ -63,9 +65,9 @@ namespace RenderCrimeMapFromCSV
             mapViewModel.SelectedGraphicsCount = $"Found {gl.SelectedGraphics.Count().ToString()} crimes ";
         }
 
-        private void getValuesFromCSV(string filepath, out CSVFileFromTextFieldParser readcsv, out int primartytypeindex, out GraphicsList getgraphicslist)
+        private void getValuesFromCSV(string filepath, out CSVFileTextFieldParser readcsv, out int primartytypeindex, out GraphicsList getgraphicslist)
         {
-            readcsv = new CSVFileFromTextFieldParser(filepath);
+            readcsv = new CSVFileTextFieldParser(filepath);
             primartytypeindex = Array.IndexOf(readcsv.RowList.First(), "Primary Type");
             getgraphicslist = new GraphicsList(readcsv.RowList);
         }
@@ -79,10 +81,12 @@ namespace RenderCrimeMapFromCSV
 
         private void LoadOutageDatatoMapSetMapExtent()
         {
-            //ReadExcel();
             //LoadGeometryToGraphicsList();
             //CreateGraphicsLayerFromList();
             //AddGraphicsToLayer();
+            var dtexcel = new DataTableFromExcel(EXCELFILEPATH);
+            var graphics = new GraphicsList(dtexcel.DataTableExcel);
+
         }
 
         private void LoadPointDatatoMapSetMapExtent()
@@ -90,7 +94,7 @@ namespace RenderCrimeMapFromCSV
             try
             {
                 //Read CSV File
-                CSVFileFromTextFieldParser readcsv;
+                CSVFileTextFieldParser readcsv;
                 int primartytypeindex;
                 GraphicsList getgraphicslist;
                 getValuesFromCSV(CSVFILEPATH, out readcsv, out primartytypeindex, out getgraphicslist);
@@ -99,7 +103,7 @@ namespace RenderCrimeMapFromCSV
                                                              .Skip(1)
                                                              .Select(x => x[primartytypeindex]).Distinct());
                 SetCrimeTypeList();
-                var goverlay = new NewGraphicsOverlayFromGraphicsList(getgraphicslist.ListofGraphics);
+                var goverlay = new Model.GraphicsOverlayCreator(getgraphicslist.ListofGraphics);
                 AddGraphicsLayertoMap(goverlay.NewGraphicsOverlay);
                 setMapInitialExtent(goverlay.GraphicsExtent);
             }

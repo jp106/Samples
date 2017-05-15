@@ -8,11 +8,11 @@ using System.Windows.Media;
 
 namespace RenderCrimeMapFromCSV.Model
 {
-    internal class NewGraphicsOverlayFromGraphicsList
+    internal class GraphicsOverlayCreator
     {
         private Viewpoint graphicsExtent;
 
-        public NewGraphicsOverlayFromGraphicsList(IList<Graphic> graphics)
+        public GraphicsOverlayCreator(IList<Graphic> graphics)
         {
             NewGraphicsOverlay = CreateGraphicsOverlayfromGraphicsList(graphics);
         }
