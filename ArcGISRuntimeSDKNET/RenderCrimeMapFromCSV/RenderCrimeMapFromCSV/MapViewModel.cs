@@ -3,7 +3,6 @@ using Esri.ArcGISRuntime.UI;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System;
 
 namespace RenderCrimeMapFromCSV
 {
@@ -12,8 +11,6 @@ namespace RenderCrimeMapFromCSV
         private HashSet<string> crimeTypeList = new HashSet<string>();
 
         private GraphicsOverlayCollection graphicsOverlays = new GraphicsOverlayCollection();
-
-        private Map map = new Map(Basemap.CreateDarkGrayCanvasVector());
 
         private string selectedGraphicsCount = string.Empty;
 
@@ -27,20 +24,19 @@ namespace RenderCrimeMapFromCSV
 
         public GraphicsOverlayCollection GraphicsOverlays { get { return graphicsOverlays; } }
 
-        internal void AddGraphicsOverlay(GraphicsOverlay layer, bool replace = false) => 
+        internal void AddGraphicsOverlay(GraphicsOverlay layer, bool replace = false) =>
                                                         graphicsOverlays.Insert(0, layer);
 
         /// <summary>
-        /// Gets or sets the map
+        /// Gets the map
         /// </summary>
-        public Map Map { get { return map; } }
+        public Map Map { get; } = new Map(Basemap.CreateDarkGrayCanvasVector());
 
         public string SelectedGraphicsCount
         {
             get { return selectedGraphicsCount; }
             set { selectedGraphicsCount = value; OnPropertyChanged(); }
         }
-
 
         public void SetViewPoint(Viewpoint viewpoint)
         {
@@ -51,7 +47,7 @@ namespace RenderCrimeMapFromCSV
         /// </summary>
         /// <param name="propertyName">The name of the property that has changed</param>
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {           
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
