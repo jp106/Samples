@@ -1,5 +1,7 @@
-﻿using Esri.ArcGISRuntime.Mapping;
+﻿using Esri.ArcGISRuntime.Data;
+using Esri.ArcGISRuntime.Mapping;
 using Esri.ArcGISRuntime.UI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -38,17 +40,22 @@ namespace RenderCrimeMapFromCSV
             set { selectedGraphicsCount = value; OnPropertyChanged(); }
         }
 
-        public void SetViewPoint(Viewpoint viewpoint)
+        public void SetOperationalLayers() => Map.OperationalLayers.Add(new FeatureLayer(
+                                      new ServiceFeatureTable(
+        //new Uri("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Counties/FeatureServer/0"))));
+        new Uri("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_States_Generalized/FeatureServer/0"))));
+
+        public Viewpoint InitialViewpoint
         {
+            get { return Map.InitialViewpoint; }
+            set { Map.InitialViewpoint = value; }
         }
 
         /// <summary>
-        /// Raises the <see cref="MapViewModel.PropertyChanged" /> event
+        /// Raises the <see cref="PropertyChanged" /> event
         /// </summary>
         /// <param name="propertyName">The name of the property that has changed</param>
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }

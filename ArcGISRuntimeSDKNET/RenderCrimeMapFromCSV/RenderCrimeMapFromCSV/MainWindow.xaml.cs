@@ -3,6 +3,7 @@ using Esri.ArcGISRuntime.UI;
 using RenderCrimeMapFromCSV.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -18,7 +19,7 @@ namespace RenderCrimeMapFromCSV
     {
         private const string CSVFILEPATH = @"data\crimedata.csv";
         private const string EXCELFILEPATH = @"data\2017_Annual_Summary.xls";
-
+        private const string USSTATESURL = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_States_Generalized/FeatureServer/0";
         private MapViewModel mapViewModel;
         private HashSet<string> UniqueCrimeType;
 
@@ -32,11 +33,11 @@ namespace RenderCrimeMapFromCSV
         {
             layer.SelectionColor = Colors.Red;
             mapViewModel.AddGraphicsOverlay(layer);
-        }   
+        }
 
         private void ButtonClearGraphics_Click(object sender, RoutedEventArgs e) => ResetSelection();
 
-        private void ButtonFullExtent_Click(object sender, RoutedEventArgs e) => MainMapView.SetViewpoint(mapViewModel.Map.InitialViewpoint);
+        private void ButtonFullExtent_Click(object sender, RoutedEventArgs e) => MainMapView.SetViewpoint(mapViewModel.InitialViewpoint);
 
         private void ButtonLoadCrimeData_Click(object sender, RoutedEventArgs e) => LoadPointDatatoMapSetMapExtent();
 
@@ -77,6 +78,7 @@ namespace RenderCrimeMapFromCSV
             // Create new Map with basemap
             mapViewModel = this.FindResource("MapViewModel") as MapViewModel;
             mapViewModel.SelectedGraphicsCount = "Graphics Count";
+            //mapViewModel.SetOperationalLayers();
         }
 
         private void LoadOutageDatatoMapSetMapExtent()
@@ -85,8 +87,15 @@ namespace RenderCrimeMapFromCSV
             //CreateGraphicsLayerFromList();
             //AddGraphicsToLayer();
             var dtexcel = new DataTableFromExcel(EXCELFILEPATH);
-            var graphics = new GraphicsList(dtexcel.DataTableExcel);
+            //var graphics = new GraphicsList(dtexcel.DataTableExcel);
+            var statesr = new StatesReader();
+            var states = statesr.ConstructStatesString(dtexcel.DataTableExcel);
 
+            var geometryquery = new FeatureLayerQuery(USSTATESURL,
+            $"upper(STATE_NAME) in ({states})");
+            //"upper(STATE_NAME) in ('FLORIDA', 'GEORGIA')");
+            //"upper(STATE_NAME) = 'FLORIDA'");
+            mapViewModel.Map.OperationalLayers.Add(geometryquery.QueryLayer);
         }
 
         private void LoadPointDatatoMapSetMapExtent()
@@ -113,6 +122,7 @@ namespace RenderCrimeMapFromCSV
                 Debug.WriteLine("Failed to load points.");
             }
         }
+
         private void ResetSelection()
         {
             mapViewModel.SelectedGraphicsCount = String.Empty;
@@ -126,9 +136,9 @@ namespace RenderCrimeMapFromCSV
         private async void setMapInitialExtent(Viewpoint viewpoint)
         {
             await MainMapView.SetViewpointAsync(viewpoint);
-            // TODO: Center
+            // TODO: Set Center
             //await MainMapView.SetViewpointCenterAsync(viewpoint.GetCenter());
-            mapViewModel.Map.InitialViewpoint = viewpoint;
+            mapViewModel.InitialViewpoint = viewpoint;
         }
     }
 }

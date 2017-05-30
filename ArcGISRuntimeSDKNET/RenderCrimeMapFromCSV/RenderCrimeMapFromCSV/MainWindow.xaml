@@ -11,9 +11,10 @@
         <local:MapViewModel x:Key="MapViewModel" />
     </Window.Resources>
     <Grid>
-        <esri:MapView x:Name="MainMapView"  Map="{Binding Map, Source={StaticResource MapViewModel}}"
-
-                      GraphicsOverlays="{Binding GraphicsOverlays, Source={StaticResource MapViewModel}}" />
+        <esri:MapView x:Name="MainMapView"  Map="{Binding Map, 
+                                                  Source={StaticResource MapViewModel}}"
+                      GraphicsOverlays="{Binding GraphicsOverlays, 
+                                         Source={StaticResource MapViewModel}}" />
         <Border>
             <StackPanel>
                 <Button Content="Render Power Outages"
@@ -25,7 +26,8 @@
                 BorderBrush="Black" BorderThickness="1">
 
             <StackPanel HorizontalAlignment="Right">
-                <Label FontWeight="Bold" FontSize="15" Content="Render Crime Incidents" HorizontalAlignment="Stretch" />
+                <Label FontWeight="Bold" FontSize="15" Content="Render Crime Incidents" 
+                       HorizontalAlignment="Stretch" />
                 <WrapPanel HorizontalAlignment="Stretch">
                     <Button Content="Click to load crime data" 
                             Click="ButtonLoadCrimeData_Click"></Button>
@@ -36,10 +38,13 @@
                     <Button Content="Click to Clear Selection" 
                             Click="ButtonClearGraphics_Click" />
                 </WrapPanel>
-                <Label Background="White"  Content="{Binding SelectedGraphicsCount, Source={StaticResource MapViewModel}}" />
+                <Label Background="White"  
+                       Content="{Binding SelectedGraphicsCount, 
+                                 Source={StaticResource MapViewModel}}" />
                 <ListBox Name="CrimeTypeListBox"
                          SelectionChanged="CrimeTypeList_SelectionChanged"
-                         ItemsSource="{Binding CrimeTypeList, Source={StaticResource MapViewModel}}">
+                         ItemsSource="{Binding CrimeTypeList, 
+                                       Source={StaticResource MapViewModel}}">
                 </ListBox>
             </StackPanel>
         </Border>

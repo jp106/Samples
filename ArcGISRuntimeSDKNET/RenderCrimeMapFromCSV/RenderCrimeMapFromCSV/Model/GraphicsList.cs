@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace RenderCrimeMapFromCSV.Model
 {
-    internal class GraphicsList
+    public class GraphicsList
     {
         public IList<Graphic> ListofGraphics { get; } = new List<Graphic>();
 
@@ -18,20 +18,27 @@ namespace RenderCrimeMapFromCSV.Model
 
         public GraphicsList(DataTable dt)
         {
-           ListofGraphics =  ConstructGraphicsList(dt);
+            ListofGraphics = ConstructGraphicsList(dt);
         }
 
         private IList<Graphic> ConstructGraphicsList(DataTable dt)
         {
-            var graphics = new List<Graphic>();
-            var columns = dt.Columns;
+            var graphics = new List<Graphic>();            
             var rows = dt.AsEnumerable();
-            rows.ToList().ForEach(r=>graphics.Add(ConstructNewGraphicfromDataRow(r)));
+            rows.ToList().ForEach(r => graphics.Add(ConstructNewGraphicfromDataRow(r)));
             return graphics;
         }
 
         private Graphic ConstructNewGraphicfromDataRow(DataRow r)
         {
+            var attributes = new List<KeyValuePair<string, object>>();
+            var columns = r.Table.Columns;
+            var locationindex = columns.IndexOf("Area affected");
+            var rowlocation = r.ItemArray[locationindex];
+            r.ItemArray.Select((x, i) => new { X = x, i = i })
+                .ToList()
+                .ForEach(x => attributes
+                .Add(new KeyValuePair<string, object>(columns[x.i].ColumnName, x.X)));
             var g = new Graphic();
             return new Graphic();
         }
@@ -51,10 +58,10 @@ namespace RenderCrimeMapFromCSV.Model
         {
             IList<Graphic> graphics = new List<Graphic>();
             double parse;
-            if (Double.TryParse(latitude, out parse) &&
+            if (double.TryParse(latitude, out parse) &&
                 double.TryParse(longitude.ToString(), out parse))
             {
-                MapPoint p = new MapPoint(Convert.ToDouble(longitude),
+                var p = new MapPoint(Convert.ToDouble(longitude),
                                           Convert.ToDouble(latitude),
                                           SpatialReferences.Wgs84);
                 return new Graphic(p, attributes);
