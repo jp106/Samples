@@ -15,7 +15,7 @@ namespace RenderCrimeMapFromCSV.Model.Tests
         }
 
         [TestMethod]
-        public void CSVFileFromStreamReaderTestConstructorWithRightFilepath()
+        public void GivenRightFilepathReturnRowCount()
         {
             var validpath = @"Data\crimedata.csv";
             var read = new CSVFileTextFieldParser(validpath);
@@ -23,7 +23,7 @@ namespace RenderCrimeMapFromCSV.Model.Tests
         }        
 
         [TestMethod()]
-        public void ReadCSVFileTestContructorWithWrongFilepath()
+        public void GivenWrongFilepathReturnEmptyRowList()
         {
             var invalidpath = @"Data\cridata.csv";
             var read = new CSVFileTextFieldParser(invalidpath);
@@ -31,13 +31,13 @@ namespace RenderCrimeMapFromCSV.Model.Tests
         }
 
         [TestMethod()]
-        public void ReadCSVFileTestDefaultConstructorWithNullInput()
+        public void GivenNullInputReturnEmptyRowList()
         {
             var read = new CSVFileTextFieldParser(null);
             Assert.IsNotNull(read.RowList);
         }
         [TestMethod]
-        public void ReadCSVFileTestEmptyFilepathInput()
+        public void GivenEmptyFilepathReturnException()
         {
             string rowlist;
             var read = new CSVFileTextFieldParser("");
