@@ -20,6 +20,7 @@ namespace RenderCrimeMapFromCSV
         private const string CSVFILEPATH = @"data\crimedata.csv";
         private const string EXCELFILEPATH = @"data\2017_Annual_Summary.xls";
         private const string USSTATESURL = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_States_Generalized/FeatureServer/0";
+        private const string USCOUNTYURL = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Counties/FeatureServer/0";
         private MapViewModel mapViewModel;
         private HashSet<string> UniqueCrimeType;
 
@@ -29,7 +30,7 @@ namespace RenderCrimeMapFromCSV
             Initialize();
         }
 
-        private void AddGraphicsLayertoMap(Esri.ArcGISRuntime.UI.GraphicsOverlay layer)
+        private void AddGraphicsLayertoMap(GraphicsOverlay layer)
         {
             layer.SelectionColor = Colors.Red;
             mapViewModel.AddGraphicsOverlay(layer);
@@ -54,7 +55,7 @@ namespace RenderCrimeMapFromCSV
             FilterGraphicsBasedonSelection(sender, gl);
         }
 
-        private void FilterGraphicsBasedonSelection(object sender, Esri.ArcGISRuntime.UI.GraphicsOverlay gl)
+        private void FilterGraphicsBasedonSelection(object sender, GraphicsOverlay gl)
         {
             var selectedvalue = ((Selector)sender).SelectedValue;
             gl.ClearSelection();
@@ -75,27 +76,20 @@ namespace RenderCrimeMapFromCSV
 
         private void Initialize()
         {
-            // Create new Map with basemap
             mapViewModel = this.FindResource("MapViewModel") as MapViewModel;
             mapViewModel.SelectedGraphicsCount = "Graphics Count";
-            //mapViewModel.SetOperationalLayers();
+            mapViewModel.SetOperationalLayers(new Uri(USSTATESURL));
         }
 
         private void LoadOutageDatatoMapSetMapExtent()
         {
-            //LoadGeometryToGraphicsList();
-            //CreateGraphicsLayerFromList();
-            //AddGraphicsToLayer();
-            var dtexcel = new DataTableFromExcel(EXCELFILEPATH);
-            //var graphics = new GraphicsList(dtexcel.DataTableExcel);
             var statesr = new StatesReader();
-            var states = statesr.ConstructStatesString(dtexcel.DataTableExcel);
-
-            var geometryquery = new FeatureLayerQuery(USSTATESURL,
-            $"upper(STATE_NAME) in ({states})");
-            //"upper(STATE_NAME) in ('FLORIDA', 'GEORGIA')");
-            //"upper(STATE_NAME) = 'FLORIDA'");
-            mapViewModel.Map.OperationalLayers.Add(geometryquery.QueryLayer);
+            var states = statesr.ConstructStatesString(
+                new DataTableFromExcel(EXCELFILEPATH).DataTableExcel);
+            //var geometryquery = new FeatureLayerQuery(USSTATESURL,
+            //$"upper(STATE_NAME) in ({states})");
+            var stateFeatureLayer = mapViewModel.Map.OperationalLayers[0] as FeatureLayer;
+            stateFeatureLayer.DefinitionExpression = $"upper(STATE_NAME) in ({states})";
         }
 
         private void LoadPointDatatoMapSetMapExtent()
@@ -139,6 +133,11 @@ namespace RenderCrimeMapFromCSV
             // TODO: Set Center
             //await MainMapView.SetViewpointCenterAsync(viewpoint.GetCenter());
             mapViewModel.InitialViewpoint = viewpoint;
+        }
+
+        private void OutageYearListBox1_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

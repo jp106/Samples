@@ -38,7 +38,8 @@ namespace RenderCrimeMapFromCSV.Model
             var rowstates = new HashSet<string>();
             statename.Split(',')
                             .Where(x => !string.IsNullOrEmpty(x)).ToList()
-                            .ForEach(x => rowstates.Add(x.Trim()));
+                            .ForEach(x => 
+                            rowstates.Add(x.Trim().ToUpper()));
             return rowstates;
         }
 

@@ -32,17 +32,17 @@ namespace RenderCrimeMapFromCSV.Model
 
         private void CreateFeatureLayer() => QueryLayer = new FeatureLayer(new ServiceFeatureTable(new Uri(url)));
 
+        
         private async void QueryFeatureLayer(FeatureLayer layer, QueryParameters queryparams)
         {
             try
             {
-                // TODO : Fix: Doesn't return any state features from whereclause 
-                // upper(STATE_NAME) in ('Florida','California','Oklahoma','Alabama','Georgia','Mississippi','New Mexico','Washington','Connecticut','Massachusetts','Rhode Island','Utah','North Carolina','Nevada','Missouri','Arkansas','Texas','Kentucky','West Virginia','Tennessee','Maine','New Hampshire','Vermont','Ohio','Michigan','New York','Oregon')
+                var serviceft = new ServiceFeatureTable(new Uri(url));
+                var newresults = await serviceft.QueryFeaturesAsync(queryparams, QueryFeatureFields.LoadAll);
                 var results = await layer.FeatureTable.QueryFeaturesAsync(queryparams);
-                var features = results.ToList();
-                if (features.Any())
+                if (results.ToList().Any())
                 {
-                    var feature = features[0];
+                    var feature = results.ToList()[0];
                     //ResultName = feature.Attributes?["STATE_NAME"]?.ToString();
                     OID = Convert.ToInt16(feature.Attributes["FID"]);
                     QueryLayer.DefinitionExpression = queryparams.WhereClause;
@@ -51,17 +51,11 @@ namespace RenderCrimeMapFromCSV.Model
                     //await myMapView.SetViewpointGeometryAsync(feature.Geometry.Extent);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show("query featurelayer failed");
             }
-
-            //var featCollection = new FeatureCollection();
-            //featCollection.Tables.Add(new FeatureCollectionTable(results));
-
-            //// Create a layer to display the feature collection, add it to the map's operational layers
-            //ResultLayer = new FeatureCollectionLayer(featCollection);
-            //MyMapView.Map.OperationalLayers.Add(featCollectionTable);
+            
         }
 
         private QueryParameters queryparams()

@@ -1,5 +1,4 @@
-﻿using Esri.ArcGISRuntime.Data;
-using Esri.ArcGISRuntime.Mapping;
+﻿using Esri.ArcGISRuntime.Mapping;
 using Esri.ArcGISRuntime.UI;
 using System;
 using System.Collections.Generic;
@@ -24,6 +23,8 @@ namespace RenderCrimeMapFromCSV
             internal set { crimeTypeList = value; OnPropertyChanged(); }
         }
 
+        public List<string> OutageYear {get;} = new List<string>() { "2017", "2016", "2015", "2014 " };
+
         public GraphicsOverlayCollection GraphicsOverlays { get { return graphicsOverlays; } }
 
         internal void AddGraphicsOverlay(GraphicsOverlay layer, bool replace = false) =>
@@ -40,10 +41,11 @@ namespace RenderCrimeMapFromCSV
             set { selectedGraphicsCount = value; OnPropertyChanged(); }
         }
 
-        public void SetOperationalLayers() => Map.OperationalLayers.Add(new FeatureLayer(
-                                      new ServiceFeatureTable(
-        //new Uri("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Counties/FeatureServer/0"))));
-        new Uri("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_States_Generalized/FeatureServer/0"))));
+        public void SetOperationalLayers(Uri layerUri) =>
+            Map.OperationalLayers.Add(new FeatureLayer(layerUri));
+
+        public FeatureLayer GetFirstOperationalLayer() => Map.OperationalLayers?[0]
+                                                            as FeatureLayer;
 
         public Viewpoint InitialViewpoint
         {
@@ -55,7 +57,7 @@ namespace RenderCrimeMapFromCSV
         /// Raises the <see cref="PropertyChanged" /> event
         /// </summary>
         /// <param name="propertyName">The name of the property that has changed</param>
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => 
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

@@ -16,9 +16,15 @@
                       GraphicsOverlays="{Binding GraphicsOverlays, 
                                          Source={StaticResource MapViewModel}}" />
         <Border>
-            <StackPanel>
+            <StackPanel HorizontalAlignment="Left">
                 <Button Content="Render Power Outages"
                         Click="ButtonLoadOutageDAta_Click" />
+                <ListBox Name="OutageYearListBox1"
+                         SelectionChanged="OutageYearListBox1_SelectionChanged"
+                         ItemsSource="{Binding OutageYear, 
+                                       Source={StaticResource MapViewModel}}">
+                </ListBox>
+
             </StackPanel>
         </Border>
         <Border Padding="20" Width="250" VerticalAlignment="Top"
