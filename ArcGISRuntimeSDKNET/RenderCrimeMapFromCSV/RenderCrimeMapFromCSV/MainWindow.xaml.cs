@@ -84,7 +84,7 @@ namespace RenderCrimeMapFromCSV
             mapViewModel.SetOperationalLayers(new Uri(USSTATESURL));
         }
 
-        private void LoadOutageDatatoMapSetMapExtent(string path )
+        private void LoadOutageDatatoMapSetMapExtent(string path)
         {
             var statesr = new StatesReader();
             var states = statesr.ConstructStatesString(
@@ -92,6 +92,7 @@ namespace RenderCrimeMapFromCSV
             //var geometryquery = new FeatureLayerQuery(USSTATESURL,
             //$"upper(STATE_NAME) in ({states})");
             var stateFeatureLayer = mapViewModel.Map.OperationalLayers[0] as FeatureLayer;
+            mapViewModel.SetOperationalLayerSymbology(0);
             stateFeatureLayer.DefinitionExpression = $"upper(STATE_NAME) in ({states})";
         }
 

@@ -28,7 +28,7 @@ namespace RenderCrimeMapFromCSV.Model
                     var dataAdapter = new OleDbDataAdapter(querystring, connection);
                     var ds = new DataSet();
                     dataAdapter.Fill(ds, "OutageTable");
-                    
+
                     return ds?.Tables[0];
                 }
                 catch (Exception ex)
@@ -40,19 +40,18 @@ namespace RenderCrimeMapFromCSV.Model
         }
 
         private string ConstructConnectionString(string filepath)
-            => (Path.GetExtension(filepath) == ".xlsx")? 
+            => (Path.GetExtension(filepath) == ".xlsx") ?
                 connectionStringXLS(filepath, string.Empty, Path.GetExtension(filepath)) :
                 connectionSTringXLSX(filepath, string.Empty, Path.GetExtension(filepath));
-        
+
         private static string connectionSTringXLSX(string filepath, string connectionString, string fileExtension)
             => "Provider=Microsoft.ACE.OLEDB.12.0;Data Source="
                                     + filepath + ";"
                                     + "Extended Properties='Excel 12.0 Xml;HDR=YES;'";
-        
+
         private static string connectionStringXLS(string filepath, string connectionString, string fileExtension)
-           =>  "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="
+           => "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="
                                     + filepath + ";"
                                     + "Extended Properties='Excel 8.0;HDR=YES;'";
-        
     }
 }

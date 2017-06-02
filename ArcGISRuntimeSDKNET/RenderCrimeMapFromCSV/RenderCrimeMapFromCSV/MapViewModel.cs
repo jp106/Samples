@@ -42,7 +42,7 @@ namespace RenderCrimeMapFromCSV
             get { return selectedGraphicsCount; }
             set { selectedGraphicsCount = value; OnPropertyChanged(); }
         }
-
+        // TODO : set featurelayer symbology 
         public void SetOperationalLayers(Uri layerUri) =>
             Map.OperationalLayers.Add(new FeatureLayer(layerUri));
 
@@ -61,5 +61,10 @@ namespace RenderCrimeMapFromCSV
         /// <param name="propertyName">The name of the property that has changed</param>
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        internal void SetOperationalLayerSymbology(int v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
