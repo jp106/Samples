@@ -21,13 +21,14 @@ namespace RenderCrimeMapFromCSV.Model
             using (OleDbConnection connection = new OleDbConnection(ConstructConnectionString(path)))
             {
                 // Set the Connection to the new OleDbConnection.
-                const string querystring = "Select * from [Sheet1$] where Month <>''";
+                const string querystring = "Select * from [Sheet1$] where 'Area Affected' <>''";
                 try
                 {
                     connection.Open();
                     var dataAdapter = new OleDbDataAdapter(querystring, connection);
                     var ds = new DataSet();
                     dataAdapter.Fill(ds, "OutageTable");
+                    
                     return ds?.Tables[0];
                 }
                 catch (Exception ex)

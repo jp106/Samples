@@ -21,6 +21,9 @@ namespace RenderCrimeMapFromCSV
         private const string EXCELFILEPATH = @"data\2017_Annual_Summary.xls";
         private const string USSTATESURL = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_States_Generalized/FeatureServer/0";
         private const string USCOUNTYURL = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Counties/FeatureServer/0";
+        private string filePath = @"data\";
+        private string filenameformat = @"_Annual_Summary.xls";
+        private string fullselectedpath = string.Empty;
         private MapViewModel mapViewModel;
         private HashSet<string> UniqueCrimeType;
 
@@ -42,7 +45,7 @@ namespace RenderCrimeMapFromCSV
 
         private void ButtonLoadCrimeData_Click(object sender, RoutedEventArgs e) => LoadPointDatatoMapSetMapExtent();
 
-        private void ButtonLoadOutageDAta_Click(object sender, RoutedEventArgs e) => LoadOutageDatatoMapSetMapExtent();
+        private void ButtonLoadOutageDAta_Click(object sender, RoutedEventArgs e) => LoadOutageDatatoMapSetMapExtent(EXCELFILEPATH);
 
         private void CrimeTypeList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -52,12 +55,12 @@ namespace RenderCrimeMapFromCSV
                 mapViewModel.SelectedGraphicsCount = "Graphics layer is empty";
                 return;
             }
-            FilterGraphicsBasedonSelection(sender, gl);
+            FilterGraphicsBasedonSelection(((Selector)sender).SelectedValue, gl);
         }
 
-        private void FilterGraphicsBasedonSelection(object sender, GraphicsOverlay gl)
+        private void FilterGraphicsBasedonSelection(object selectedvalue, GraphicsOverlay gl)
         {
-            var selectedvalue = ((Selector)sender).SelectedValue;
+            //var selectedvalue = ((Selector)sender).SelectedValue;
             gl.ClearSelection();
             gl.Graphics.Where(x =>
                         (x.Attributes.Keys.Contains("Primary Type") == true) &&
@@ -81,11 +84,11 @@ namespace RenderCrimeMapFromCSV
             mapViewModel.SetOperationalLayers(new Uri(USSTATESURL));
         }
 
-        private void LoadOutageDatatoMapSetMapExtent()
+        private void LoadOutageDatatoMapSetMapExtent(string path )
         {
             var statesr = new StatesReader();
             var states = statesr.ConstructStatesString(
-                new DataTableFromExcel(EXCELFILEPATH).DataTableExcel);
+                new DataTableFromExcel(path).DataTableExcel);
             //var geometryquery = new FeatureLayerQuery(USSTATESURL,
             //$"upper(STATE_NAME) in ({states})");
             var stateFeatureLayer = mapViewModel.Map.OperationalLayers[0] as FeatureLayer;
@@ -137,7 +140,8 @@ namespace RenderCrimeMapFromCSV
 
         private void OutageYearListBox1_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-
+            var year = ((Selector)sender).SelectedValue.ToString();
+            LoadOutageDatatoMapSetMapExtent($"{filePath}{year}{filenameformat}");
         }
     }
 }

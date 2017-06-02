@@ -3,6 +3,7 @@ using Esri.ArcGISRuntime.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace RenderCrimeMapFromCSV
@@ -23,7 +24,8 @@ namespace RenderCrimeMapFromCSV
             internal set { crimeTypeList = value; OnPropertyChanged(); }
         }
 
-        public List<string> OutageYear {get;} = new List<string>() { "2017", "2016", "2015", "2014 " };
+        public List<string> OutageYear { get; }
+            = new List<string>(Enumerable.Range(2002, 16).Select(x => x.ToString()));
 
         public GraphicsOverlayCollection GraphicsOverlays { get { return graphicsOverlays; } }
 
