@@ -61,7 +61,7 @@ for year in range(2002, 2018):
 
 Note: The column number and null data varies by year. So group files by same number of columns and prepare excel file accordingly.
 
-# 3. Clean Data to make it conistent
+# 3. Clean Data to make it consistent
 
 Based on the number of columns from above files will be grouped into :
 * 2002 to 2010
